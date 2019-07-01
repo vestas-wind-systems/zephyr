@@ -21,6 +21,8 @@ manifest:
   remotes:
     - name: upstream
       url-base: https://github.com/zephyrproject-rtos
+    - name: vestas
+      url-base: https://github.com/vestas-wind-systems
 
   #
   # Please add items below based on alphabetical order
@@ -28,6 +30,10 @@ manifest:
     - name: hal_atmel
       revision: 5690f5b84495c8b657ff204c5c827df1ab9e12e3
       path: modules/hal/atmel
+    - name: canopennode
+      path: modules/lib/CANopenNode
+      remote: vestas
+      revision: 29ccdf14665c297d430de8a7af08619d61ea0ff6
     - name: ci-tools
       revision: 20aa511fbd302ba8429a9ab04ee96c201b547743
       path: tools/ci-tools
