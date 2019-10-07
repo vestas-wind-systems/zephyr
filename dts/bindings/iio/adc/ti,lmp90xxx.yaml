@@ -1,0 +1,12 @@
+# Common fields for Texas Instruments LMP90xxx AFEs
+
+include: adc-controller.yaml
+include: spi-device.yaml
+
+child-bus: lmp90xxx
+
+properties:
+    drdyb-gpios:
+      type: phandle-array
+      required: false
+      description: Data Ready Bar

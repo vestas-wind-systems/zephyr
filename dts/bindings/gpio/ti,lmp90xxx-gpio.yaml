@@ -1,0 +1,17 @@
+title: TI LMP90xxx AFE GPIO controller
+
+description: TI LMP90xxx GPIO controller binding
+
+compatible: "ti,lmp90xxx-gpio"
+
+include: base.yaml
+
+parent-bus: lmp90xxx
+
+properties:
+    label:
+      required: true
+
+gpio-cells:
+  - pin
+  - flags
