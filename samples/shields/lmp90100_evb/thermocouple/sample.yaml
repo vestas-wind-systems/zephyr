@@ -1,0 +1,7 @@
+sample:
+  name: LMP90100 EVB thermocouple
+tests:
+  sample.shields.lmp90100_evb.thermocouple:
+    harness: shield
+    tags: shield
+    depends_on: arduino_spi
