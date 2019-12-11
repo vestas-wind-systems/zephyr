@@ -255,6 +255,7 @@
 /include/sys/atomic.h                     @andrewboie @andyross
 /include/bluetooth/                       @joerchan @jhedberg @Vudentz
 /include/cache.h                          @andrewboie @andyross
+/include/canbus/                          @alexanderwachter
 /include/device.h                         @wentongwu @nashif
 /include/display/                         @vanwinkeljan
 /include/dt-bindings/clock/kinetis_mcg.h  @henrikbrixandersen
@@ -342,6 +343,7 @@
 /subsys/bluetooth/                        @joerchan @jhedberg @Vudentz
 /subsys/bluetooth/controller/             @carlescufi @cvinayak @thoh-ot
 /subsys/bluetooth/mesh/                   @jhedberg @trond-snekvik @joerchan @Vudentz
+/subsys/canbus/                           @alexanderwachter
 /subsys/cpp/                              @pabigot @vanwinkeljan
 /subsys/debug/                            @nashif
 /subsys/debug/asan_hacks.c                @vanwinkeljan @aescolar
