@@ -2,6 +2,7 @@ Pillow
 PyYAML>=5.1
 anytree
 breathe>=4.9.1
+canopen
 colorama
 docutils>=0.14
 gcovr>=4.2
@@ -9,6 +10,7 @@ gitlint
 intelhex
 junit2html
 packaging
+progress
 ply>=3.10
 pyelftools>=0.24
 pykwalify
