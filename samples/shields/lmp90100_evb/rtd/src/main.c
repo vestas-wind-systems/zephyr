@@ -86,7 +86,7 @@ void main(void)
 		err = adc_read(lmp90100, &seq);
 		if (err) {
 			LOG_ERR("failed to read ADC (err %d)", err);
-			return;
+			continue;
 		}
 
 		resistance = (buffer / 8388608.0) * 2000;
