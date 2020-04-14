@@ -43,6 +43,10 @@ static int temp_kinetis_sample_fetch(struct device *dev,
 {
 	const struct temp_kinetis_config *config = dev->config->config_info;
 	struct temp_kinetis_data *data = dev->driver_data;
+#ifdef CONFIG_TEMP_KINETIS_FILTER
+	u16_t previous[TEMP_KINETIS_ADC_SAMPLES];
+	int i;
+#endif /* CONFIG_TEMP_KINETIS_FILTER */
 	int err;
 
 	/* Always read both sensor and bandgap voltage in one go */
@@ -51,6 +55,10 @@ static int temp_kinetis_sample_fetch(struct device *dev,
 		return -ENOTSUP;
 	}
 
+#ifdef CONFIG_TEMP_KINETIS_FILTER
+	memcpy(previous, data->buffer, sizeof(previous));
+#endif /* CONFIG_TEMP_KINETIS_FILTER */
+
 	err = adc_read(data->adc, &config->adc_seq);
 	if (err) {
 		LOG_ERR("failed to read ADC channels (err %d)", err);
@@ -58,6 +66,18 @@ static int temp_kinetis_sample_fetch(struct device *dev,
 	}
 
 	LOG_DBG("sensor = %d, bandgap = %d", data->buffer[0], data->buffer[1]);
+
+#ifdef CONFIG_TEMP_KINETIS_FILTER
+	if (previous[0] != 0 && previous[1] != 0) {
+		for (i = 0; i < ARRAY_SIZE(previous); i++) {
+			data->buffer[i] = (data->buffer[i] >> 1) +
+				(previous[i] >> 1);
+		}
+
+		LOG_DBG("sensor = %d, bandgap = %d (filtered)", data->buffer[0],
+			data->buffer[1]);
+	}
+#endif /* CONFIG_TEMP_KINETIS_FILTER */
 
 	return 0;
 }
@@ -70,10 +90,10 @@ static int temp_kinetis_channel_get(struct device *dev,
 	struct temp_kinetis_data *data = dev->driver_data;
 	u16_t adcr_vdd = BIT_MASK(config->adc_seq.resolution);
 	u16_t adcr_temp25;
-	s32_t temp_mc;
+	s32_t temp_cc;
 	s32_t vdd_mv;
 	int slope_uv;
-	u16_t m;
+	u16_t adcr_100m;
 
 	if (chan != SENSOR_CHAN_VOLTAGE && chan != SENSOR_CHAN_DIE_TEMP) {
 		return -ENOTSUP;
@@ -98,14 +118,14 @@ static int temp_kinetis_channel_get(struct device *dev,
 		slope_uv = config->slope_hot_uv;
 	}
 
-	/* m x 1000 */
-	m = (adcr_vdd * slope_uv) / vdd_mv;
+	adcr_100m = (adcr_vdd * slope_uv) / (vdd_mv * 10);
 
-	/* Temperature in milli degrees Celsius */
-	temp_mc = 25000 - ((data->buffer[0] - adcr_temp25) * 1000000) / m;
+	/* Temperature in centi degrees Celsius */
+	temp_cc = 2500 -
+		(((data->buffer[0] - adcr_temp25) * 10000) / adcr_100m);
 
-	val->val1 = temp_mc / 1000;
-	val->val2 = (temp_mc % 1000) * 1000;
+	val->val1 = temp_cc / 100;
+	val->val2 = (temp_cc % 100) * 10000;
 
 	return 0;
 }
