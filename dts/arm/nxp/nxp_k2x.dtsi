@@ -319,6 +319,7 @@
 			reg = <0x40039000 0x98>;
 			interrupts = <43 0>;
 			label = "PWM_1";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};
@@ -328,6 +329,7 @@
 			reg = <0x4003a000 0x98>;
 			interrupts = <44 0>;
 			label = "PWM_2";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};
@@ -337,6 +339,7 @@
 			reg = <0x400b9000 0x98>;
 			interrupts = <71 0>;
 			label = "PWM_3";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};

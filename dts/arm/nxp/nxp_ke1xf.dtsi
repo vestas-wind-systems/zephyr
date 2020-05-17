@@ -399,6 +399,7 @@
 			reg = <0x40038000 0x1000>;
 			interrupts = <42 0>;
 			clocks = <&pcc 0xe0 KINETIS_PCC_SRC_FIRC_ASYNC>;
+			prescaler = <16>;
 			label = "PWM_0";
 			#pwm-cells = <3>;
 			status = "disabled";
@@ -409,6 +410,7 @@
 			reg = <0x40039000 0x1000>;
 			interrupts = <43 0>;
 			clocks = <&pcc 0xe4 KINETIS_PCC_SRC_FIRC_ASYNC>;
+			prescaler = <16>;
 			label = "PWM_1";
 			#pwm-cells = <3>;
 			status = "disabled";
@@ -419,6 +421,7 @@
 			reg = <0x4003a000 0x1000>;
 			interrupts = <44 0>;
 			clocks = <&pcc 0xe8 KINETIS_PCC_SRC_FIRC_ASYNC>;
+			prescaler = <16>;
 			label = "PWM_2";
 			#pwm-cells = <3>;
 			status = "disabled";
@@ -429,6 +432,7 @@
 			reg = <0x40026000 0x1000>;
 			interrupts = <71 0>;
 			clocks = <&pcc 0x98 KINETIS_PCC_SRC_FIRC_ASYNC>;
+			prescaler = <16>;
 			label = "PWM_3";
 			#pwm-cells = <3>;
 			status = "disabled";

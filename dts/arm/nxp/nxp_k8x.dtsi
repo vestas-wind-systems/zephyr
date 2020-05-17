@@ -279,6 +279,7 @@
 			interrupts = <42 0>;
 			clocks = <&mcg KINETIS_MCG_FIXED_FREQ_CLK>;
 			label = "PWM_0";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};
@@ -289,6 +290,7 @@
 			interrupts = <43 0>;
 			clocks = <&mcg KINETIS_MCG_FIXED_FREQ_CLK>;
 			label = "PWM_1";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};
@@ -299,6 +301,7 @@
 			interrupts = <44 0>;
 			clocks = <&mcg KINETIS_MCG_FIXED_FREQ_CLK>;
 			label = "PWM_2";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};
@@ -309,6 +312,7 @@
 			interrupts = <71 0>;
 			clocks = <&mcg KINETIS_MCG_FIXED_FREQ_CLK>;
 			label = "PWM_3";
+			prescaler = <16>;
 			status = "disabled";
 			#pwm-cells = <3>;
 		};
