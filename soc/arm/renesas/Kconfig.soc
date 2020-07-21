@@ -1,0 +1,11 @@
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_RENESAS_RCAR_CR7
+	bool "Renesas RCAR Cortex R7"
+	select ARM
+	select CPU_CORTEX_R5
+	select GIC_V2
+	select PLATFORM_SPECIFIC_INIT
+	select CPU_HAS_DCLS
+

@@ -1,0 +1,12 @@
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+if SOC_RENESAS_RCAR_CR7
+
+config SOC
+	default "renesas"
+
+config NUM_IRQS
+       default 512
+
+endif # SOC_RENESAS_RCAR_CR7
