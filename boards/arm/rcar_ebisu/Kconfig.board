@@ -1,0 +1,6 @@
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_RCAR_EBISU_CR7
+	bool "Cortex-R7 for Renesas Ebisu"
+	depends on SOC_RENESAS_RCAR_CR7
