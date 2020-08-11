@@ -1,0 +1,10 @@
+identifier: rcar_ulb_cr7
+name: Cortex r7 for Renesas ULCB (H3&M3)
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+  - gpio
+ram: 768
