@@ -46,10 +46,10 @@ struct gpio_rcar_data {
 #define RCAR_MAX_GPIO_PER_BANK		32
 
 /* FIXME: this should be moved to the DT */
-#define MSTPSR9 0xe61509A4
+#define RMSTPCR9 0xE6150984
 
-#define MSTPSR9_GPIO5 BIT(7)
-#define MSTPSR9_GPIO6 BIT(6)
+#define RMSTPCR9_GPIO5 BIT(7)
+#define RMSTPCR9_GPIO6 BIT(6)
 
 /* Helper macros for GPIO */
 
@@ -248,9 +248,9 @@ static int gpio_rcar_pin_interrupt_configure(const struct device *dev,
 static void mstpr9_enable_device(uint32_t dev)
 {
 	uint32_t reg_val;
-	reg_val = sys_read32(MSTPSR9);
+	reg_val = sys_read32(RMSTPCR9);
 	reg_val &= ~dev;
-	sys_write32(reg_val, MSTPSR9);
+	sys_write32(reg_val, RMSTPCR9);
 }
 
 static int gpio_rcar_init(const struct device *dev)
@@ -258,7 +258,7 @@ static int gpio_rcar_init(const struct device *dev)
 	const struct gpio_rcar_cfg *config = DEV_GPIO_CFG(dev);
 
 	/* This command enable GPIO5 and GPIO6 should be moved, somewhere else */
-	mstpr9_enable_device(MSTPSR9_GPIO5|MSTPSR9_GPIO6);
+	mstpr9_enable_device(RMSTPCR9_GPIO5|RMSTPCR9_GPIO6);
 
 	config->init_func(dev);
 	return 0;
