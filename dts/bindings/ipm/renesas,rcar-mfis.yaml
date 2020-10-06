@@ -1,0 +1,21 @@
+# Copyright (c) 2020, IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+description: Renesas Rcar MFIS IPM Mailbox
+
+compatible: "renesas,rcar-mfis"
+
+include: base.yaml
+
+properties:
+  reg:
+      required: true
+
+  interrupts:
+      required: true
+
+  interrupt-names:
+      required: true
+
+  label:
+      required: true

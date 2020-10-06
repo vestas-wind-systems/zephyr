@@ -75,5 +75,17 @@
 			reg = <0xe60f0500 0x1004>;
 			label = "cmt0";
 		};
+
+		mfis: mfis@e6260400{
+			compatible = "renesas,rcar-mfis";
+			status = "disabled";
+			reg = <0xe6260400 0x10>;
+			interrupts = <GIC_SPI 224 IRQ_TYPE_LEVEL
+					IRQ_DEFAULT_PRIORITY>,
+				     <GIC_SPI 225 IRQ_TYPE_LEVEL
+					IRQ_DEFAULT_PRIORITY>;
+			interrupt-names = "rxo", "txf";
+			label = "mfis";
+		};
 	};
 };
