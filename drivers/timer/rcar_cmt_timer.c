@@ -6,12 +6,16 @@
 
 #include <soc.h>
 #include <drivers/timer/system_timer.h>
+#include <drivers/clock_control.h>
 
 #define DT_DRV_COMPAT rcar_cmt
 
 #define TIMER_IRQ		DT_INST_IRQN(0)
 #define TIMER_BASE_ADDR		DT_INST_REG_ADDR(0)
 #define TIMER_CLOCK_FREQUENCY	DT_INST_PROP(0, clock_frequency)
+
+#define CLOCK_CONTROLLER        DT_INST_CLOCKS_LABEL(0)
+#define CLOCK_SUBSYS            DT_INST_CLOCKS_CELL(0, module)
 
 #define CYCLES_PER_SEC		TIMER_CLOCK_FREQUENCY
 #define CYCLES_PER_MS           CYCLES_PER_SEC / 1000
@@ -38,10 +42,6 @@ BUILD_ASSERT(CYCLES_PER_TICK > 1,
 	     "CYCLES_PER_TICK must be greater than 1 for ticking mode");
 
 #endif
-
-/* CMT0 Module Stop */
-#define RMSTPCR3		0xE615011CU
-#define MSTP303		BIT(3)
 
 #define CMCOR0_OFFSET	0x018	/* Compare match timer constant register 0 */
 #define CMCNT0_OFFSET	0x014	/* Compare match timer counter 0 */
@@ -128,12 +128,19 @@ static void cmt_isr(void *arg)
 
 int z_clock_driver_init(const struct device *device)
 {
+	const struct device *clk;
 	uint32_t reg_val;
-	int i;
-	/* FIXME: Enable only CMT0 module clock */
-	reg_val = sys_read32(RMSTPCR3);
-	reg_val &= ~MSTP303;
-	sys_write32(reg_val, RMSTPCR3);
+	int i, ret;
+
+	clk = device_get_binding(CLOCK_CONTROLLER);
+	if (!clk) {
+		return -ENODEV;
+	}
+
+	ret = clock_control_on(clk, (clock_control_subsys_t) CLOCK_SUBSYS);
+	if (ret < 0) {
+		return ret;
+	}
 
 	/* Clock Enable */
 	reg_val = sys_read32(TIMER_BASE_ADDR + CMCLKE);

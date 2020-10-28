@@ -13,6 +13,8 @@
 #include <init.h>
 #include <soc.h>
 #include <drivers/gpio.h>
+#include <drivers/clock_control.h>
+
 #include "gpio_utils.h"
 
 typedef void (*init_func_t)(const struct device *dev);
@@ -22,6 +24,8 @@ struct gpio_rcar_cfg {
 	uint32_t reg_addr;
 	int reg_size;
 	init_func_t init_func;
+	char *clock_controller;
+	clock_control_subsys_t clock_subsys;
 };
 
 struct gpio_rcar_data {
@@ -45,14 +49,7 @@ struct gpio_rcar_data {
 
 #define RCAR_MAX_GPIO_PER_BANK		32
 
-/* FIXME: this should be moved to the DT */
-#define RMSTPCR9 0xE6150984
-
-#define RMSTPCR9_GPIO5 BIT(7)
-#define RMSTPCR9_GPIO6 BIT(6)
-
 /* Helper macros for GPIO */
-
 #define DEV_GPIO_CFG(dev)						\
 	((const struct gpio_rcar_cfg *)(dev)->config)
 #define DEV_GPIO_DATA(dev)				\
@@ -244,21 +241,24 @@ static int gpio_rcar_pin_interrupt_configure(const struct device *dev,
 	return 0;
 }
 
-/* FIXME: need to move this part to a clock framework */
-static void mstpr9_enable_device(uint32_t dev)
-{
-	uint32_t reg_val;
-	reg_val = sys_read32(RMSTPCR9);
-	reg_val &= ~dev;
-	sys_write32(reg_val, RMSTPCR9);
-}
-
 static int gpio_rcar_init(const struct device *dev)
 {
 	const struct gpio_rcar_cfg *config = DEV_GPIO_CFG(dev);
+	const struct device *clk;
+	int ret;
 
-	/* This command enable GPIO5 and GPIO6 should be moved, somewhere else */
-	mstpr9_enable_device(RMSTPCR9_GPIO5|RMSTPCR9_GPIO6);
+	if (config->clock_controller) {
+		clk = device_get_binding(config->clock_controller);
+		if (!clk) {
+			return -ENODEV;
+		}
+
+		ret = clock_control_on(clk, config->clock_subsys);
+
+		if (ret < 0) {
+			return ret;
+		}
+	}
 
 	config->init_func(dev);
 	return 0;
@@ -295,6 +295,9 @@ static const struct gpio_driver_api gpio_rcar_driver_api = {
 		.reg_addr = DT_INST_REG_ADDR(n), \
 		.reg_size = DT_INST_REG_SIZE(n), \
 		.init_func = gpio_rcar_##n##_init, \
+		.clock_controller = DT_INST_CLOCKS_LABEL(n), \
+		.clock_subsys = (clock_control_subsys_t) \
+				DT_INST_CLOCKS_CELL(n, module) \
 	}; \
 	static struct gpio_rcar_data gpio_rcar_data_##n; \
 \
