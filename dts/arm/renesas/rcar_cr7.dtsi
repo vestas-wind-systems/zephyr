@@ -8,6 +8,7 @@
 #include <arm/armv7-r.dtsi>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/clock/renesas-cpg.mssr.h>
 / {
 	cpus {
 		#address-cells = <1>;
@@ -50,6 +51,7 @@
 			gpio-controller;
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
+			clocks = <&cpg CPG_MOD 907>;
 			label = "gpio5";
 		};
 
@@ -60,6 +62,7 @@
 			gpio-controller;
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
+			clocks = <&cpg CPG_MOD 906>;
 			label = "gpio6";
 		};
 
@@ -73,7 +76,15 @@
 					IRQ_DEFAULT_PRIORITY>;
 			interrupt-names = "irq_0", "irq_1";
 			reg = <0xe60f0500 0x1004>;
+			clocks = <&cpg CPG_MOD 303>;
 			label = "cmt0";
+		};
+
+		cpg: clock-controller@e6150000 {
+			compatible = "renesas,rcar-cpg-mssr";
+			reg = <0xe6150000 0x1000>;
+			#clock-cells = <2>;
+			label = "cpg";
 		};
 
 		mfis: mfis@e6260400{
