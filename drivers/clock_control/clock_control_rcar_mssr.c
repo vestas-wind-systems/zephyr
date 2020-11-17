@@ -15,17 +15,50 @@ struct rcar_mssr_config {
 
 #define DEV_CFG(dev)  ((struct rcar_mssr_config *)(dev->config))
 
-static const uint32_t rmstpsr[] = {
+static const uint16_t rmstpsr[] = {
 	0x110, 0x114, 0x118, 0x11c, 0x120, 0x124, 0x128, 0x12c,
 	0x980, 0x984, 0x988, 0x98c,
 };
 
 #define	RMSTPSR(i)	rmstpsr[i]
 
+/*
+ * Software Reset Register offsets
+ */
+static const uint16_t srcr[] = {
+	0x0A0, 0x0A8, 0x0B0, 0x0B8, 0x0BC, 0x0C4, 0x1C8, 0x1CC,
+	0x920, 0x924, 0x928, 0x92C,
+};
+
+#define	SRCR(i)		srcr[i]
+
+/* Software Reset Clearing Register offsets */
+#define	SRSTCLR(i)	(0x940 + (i) * 4)
+
+#define CPGWPR 0x0900
+
+static void cpg_write(uint32_t addr, uint32_t val)
+{
+	sys_write32(~val, CPGWPR);
+	sys_write32(val, addr);
+	/* Wait for at least one cycle of the RCLK clock (@ ca. 32 kHz) */
+	k_sleep(K_USEC(35));
+}
+
+static void cpg_reset(const struct rcar_mssr_config *config,
+		      uint32_t reg, uint32_t bit)
+{
+	uint32_t addr = config->base_address + SRCR(reg);
+	cpg_write(addr, BIT(bit));
+
+	addr = config->base_address + SRSTCLR(reg);
+	cpg_write(addr, BIT(bit));
+}
+
 static int cpg_rmstp_clock_endisable(const struct device *dev,
 			     clock_control_subsys_t sub_system, bool enable)
 {
-	struct rcar_mssr_config *config = DEV_CFG(dev);
+	const struct rcar_mssr_config *config = DEV_CFG(dev);
 	uint32_t index = POINTER_TO_UINT(sub_system);
 	uint32_t reg = index / 100;
 	uint32_t bit = index % 100;
@@ -40,6 +73,8 @@ static int cpg_rmstp_clock_endisable(const struct device *dev,
 		reg_val |= bitmask;
 
 	sys_write32(reg_val, config->base_address + rmstpsr[reg]);
+	if (!enable)
+		cpg_reset(config, reg, bit);
 	irq_unlock(key);
 
 	return 0;
