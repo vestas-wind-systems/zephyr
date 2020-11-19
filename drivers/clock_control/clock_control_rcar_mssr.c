@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <soc.h>
 #include <drivers/clock_control.h>
+#include <drivers/clock_control/rcar_clock_control.h>
+#include <dt-bindings/clock/renesas-cpg.h>
 
 struct rcar_mssr_config {
 	uint32_t base_address;
@@ -36,6 +38,15 @@ static const uint16_t srcr[] = {
 #define	SRSTCLR(i)	(0x940 + (i) * 4)
 
 #define CPGWPR 0x0900
+/* CAN-FD Clock Frequency Control Register */
+#define CANFDCKCR 0x244
+
+/* Clock stop bit */
+#define CANFDCKCR_CKSTP BIT(8)
+
+/* On H3,M3,E3 parent clock of CANFD has 800MHz rate */
+#define CANFDCKCR_PARENT_CLK_RATE 800000000
+#define CANFDCKCR_DIVIDER_MASK 0x1FF
 
 static void cpg_write(uint32_t addr, uint32_t val)
 {
@@ -55,13 +66,47 @@ static void cpg_reset(const struct rcar_mssr_config *config,
 	cpg_write(addr, BIT(bit));
 }
 
-static int cpg_rmstp_clock_endisable(const struct device *dev,
-			     clock_control_subsys_t sub_system, bool enable)
+static int cpg_core_clock_endisable(const struct device *dev,
+				    uint32_t module, uint32_t rate, bool enable)
 {
 	const struct rcar_mssr_config *config = DEV_CFG(dev);
-	uint32_t index = POINTER_TO_UINT(sub_system);
-	uint32_t reg = index / 100;
-	uint32_t bit = index % 100;
+	uint32_t divider;
+	int ret;
+
+	/* Only support CANFD core clock at the moment */
+	if (module != CPG_CORE_CLK_CANFD)
+		return -EINVAL;
+	int key = irq_lock();
+
+	uint32_t addr = config->base_address + CANFDCKCR;
+	if (enable) {
+		if (CANFDCKCR_PARENT_CLK_RATE % rate) {
+			__ASSERT(true, "Can not generate %u from CANFD parent clock", rate);
+			ret = -EINVAL;
+			goto unlock;
+		}
+		divider = (CANFDCKCR_PARENT_CLK_RATE / rate) - 1;
+		if (divider > CANFDCKCR_DIVIDER_MASK) {
+			__ASSERT(true, "Can not genearate %u from CANFD parent clock", rate);
+			ret = -EINVAL;
+			goto unlock;
+		}
+		cpg_write(addr, divider);
+	}
+	else
+		cpg_write(addr, CANFDCKCR_CKSTP);
+
+unlock:
+	irq_unlock(key);
+	return 0;
+}
+
+static int cpg_rmstp_clock_endisable(const struct device *dev,
+			     uint32_t module, bool enable)
+{
+	const struct rcar_mssr_config *config = DEV_CFG(dev);
+	uint32_t reg = module / 100;
+	uint32_t bit = module % 100;
 	uint32_t bitmask = BIT(bit);
 	uint32_t reg_val;
 
@@ -83,13 +128,54 @@ static int cpg_rmstp_clock_endisable(const struct device *dev,
 static int mssr_blocking_start(const struct device *dev,
 			       clock_control_subsys_t sys)
 {
-	return cpg_rmstp_clock_endisable(dev, sys, true);
+	struct rcar_cpg_clk *clk = (struct rcar_cpg_clk *) sys;
+
+	if (clk->domain == CPG_MOD)
+		return cpg_rmstp_clock_endisable(dev, clk->module, true);
+
+	if (clk->domain == CPG_CORE)
+		return cpg_core_clock_endisable(dev, clk->module, clk->rate, true);
+
+	return -EINVAL;
 }
 
 static int mssr_stop(const struct device *dev,
 		     clock_control_subsys_t sys)
 {
-	return cpg_rmstp_clock_endisable(dev, sys, false);
+	struct rcar_cpg_clk *clk = (struct rcar_cpg_clk *) sys;
+
+	if (clk->domain == CPG_MOD)
+		return cpg_rmstp_clock_endisable(dev, clk->module, false);
+
+	if (clk->domain == CPG_CORE)
+		return cpg_core_clock_endisable(dev, clk->module, false, 0);
+
+	return -EINVAL;
+}
+
+static int cpg_get_rate(const struct device *dev,
+				 clock_control_subsys_t sys,
+				 uint32_t *rate)
+{
+	const struct rcar_mssr_config *config = DEV_CFG(dev);
+	struct rcar_cpg_clk *clk = (struct rcar_cpg_clk *) sys;
+	uint32_t val;
+
+	/* CPG_MOD just support on/off, we only support canfd as
+	 * configurable rate.
+	 */
+	if (clk->domain != CPG_CORE || clk->module != CPG_CORE_CLK_CANFD)
+		return -ENOTSUP;
+
+	val = sys_read32(config->base_address + CANFDCKCR);
+	if (val & CANFDCKCR_CKSTP)
+		*rate = 0;
+	else {
+		val &= CANFDCKCR_DIVIDER_MASK;
+		*rate = CANFDCKCR_PARENT_CLK_RATE / (val + 1);
+	}
+
+	return 0;
 }
 
 static int rcar_mssr_init(const struct device *dev)
@@ -100,6 +186,7 @@ static int rcar_mssr_init(const struct device *dev)
 static const struct clock_control_driver_api rcar_mssr_api = {
 	.on = mssr_blocking_start,
 	.off = mssr_stop,
+	.get_rate = cpg_get_rate,
 };
 
 #define RCAR_MSSR_INIT(inst)						\

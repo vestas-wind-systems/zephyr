@@ -7,6 +7,7 @@
 #include <soc.h>
 #include <drivers/timer/system_timer.h>
 #include <drivers/clock_control.h>
+#include <drivers/clock_control/rcar_clock_control.h>
 
 #define DT_DRV_COMPAT rcar_cmt
 
@@ -20,6 +21,11 @@
 #define CYCLES_PER_SEC		TIMER_CLOCK_FREQUENCY
 #define CYCLES_PER_MS           CYCLES_PER_SEC / 1000
 #define CYCLES_PER_TICK		(CYCLES_PER_SEC / CONFIG_SYS_CLOCK_TICKS_PER_SEC)
+
+static struct rcar_cpg_clk mod_clk = {
+	.module = DT_INST_CLOCKS_CELL(0, module),
+	.domain = DT_INST_CLOCKS_CELL(0, domain),
+};
 
 #ifdef CONFIG_TICKLESS_KERNEL
 /* FIXME: we need to protect against concurent access of these variable
@@ -137,7 +143,7 @@ int z_clock_driver_init(const struct device *device)
 		return -ENODEV;
 	}
 
-	ret = clock_control_on(clk, (clock_control_subsys_t) CLOCK_SUBSYS);
+	ret = clock_control_on(clk, (clock_control_subsys_t *) &mod_clk);
 	if (ret < 0) {
 		return ret;
 	}

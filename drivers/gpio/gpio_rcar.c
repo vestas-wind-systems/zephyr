@@ -14,6 +14,7 @@
 #include <soc.h>
 #include <drivers/gpio.h>
 #include <drivers/clock_control.h>
+#include <drivers/clock_control/rcar_clock_control.h>
 
 #include "gpio_utils.h"
 
@@ -25,7 +26,7 @@ struct gpio_rcar_cfg {
 	int reg_size;
 	init_func_t init_func;
 	char *clock_controller;
-	clock_control_subsys_t clock_subsys;
+	struct rcar_cpg_clk mod_clk;
 };
 
 struct gpio_rcar_data {
@@ -253,7 +254,8 @@ static int gpio_rcar_init(const struct device *dev)
 			return -ENODEV;
 		}
 
-		ret = clock_control_on(clk, config->clock_subsys);
+		ret = clock_control_on(clk,
+			       (clock_control_subsys_t *) &config->mod_clk);
 
 		if (ret < 0) {
 			return ret;
@@ -296,8 +298,10 @@ static const struct gpio_driver_api gpio_rcar_driver_api = {
 		.reg_size = DT_INST_REG_SIZE(n), \
 		.init_func = gpio_rcar_##n##_init, \
 		.clock_controller = DT_INST_CLOCKS_LABEL(n), \
-		.clock_subsys = (clock_control_subsys_t) \
-				DT_INST_CLOCKS_CELL(n, module) \
+		.mod_clk.module = \
+		DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module), \
+		.mod_clk.domain = \
+		DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain), \
 	}; \
 	static struct gpio_rcar_data gpio_rcar_data_##n; \
 \
