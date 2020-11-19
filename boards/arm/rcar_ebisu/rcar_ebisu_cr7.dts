@@ -66,3 +66,7 @@
 &mfis {
 	status = "okay";
 };
+
+&pfc {
+	status = "okay";
+};

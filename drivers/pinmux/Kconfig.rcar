@@ -1,0 +1,10 @@
+# Renesas RCar Gen3 pinmux
+
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config PINMUX_RCAR
+	bool "Renesas RCar Gen3 pinmux driver"
+	depends on SOC_RENESAS_RCAR_CR7
+	help
+	  Enable the Renesas RCar Gen3 pinmux driver.
