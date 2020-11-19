@@ -102,6 +102,7 @@
 				     <GIC_SPI 225 IRQ_TYPE_LEVEL
 					IRQ_DEFAULT_PRIORITY>;
 			interrupt-names = "rxo", "txf";
+			clocks = <&cpg CPG_MOD 213>;
 			label = "mfis";
 		};
 	};
