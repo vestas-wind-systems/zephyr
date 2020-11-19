@@ -1,0 +1,15 @@
+description: Renesas RCar Gen3 CAN controller
+
+compatible: "renesas,rcar-gen3-can"
+
+include: can-controller.yaml
+
+properties:
+    reg:
+      required: true
+
+    interrupts:
+      required: true
+
+    clocks:
+      required: true

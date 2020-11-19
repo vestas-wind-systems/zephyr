@@ -29,8 +29,6 @@
 			reg = <0x40040000 0x1fc0000>;
 		};
 
-
-
 		/*R-Car Series, 3rd Generation 12B.2*/
 		gic: interrupt-controller@f1110000 {
 			compatible = "arm,gic";
@@ -93,7 +91,7 @@
 			label = "cpg";
 		};
 
-		mfis: mfis@e6260400{
+		mfis: mfis@e6260400 {
 			compatible = "renesas,rcar-mfis";
 			status = "disabled";
 			reg = <0xe6260400 0x10>;
@@ -105,5 +103,23 @@
 			clocks = <&cpg CPG_MOD 213>;
 			label = "mfis";
 		};
+
+		can0: can@e6c30000 {
+			compatible = "renesas,rcar-gen3-can";
+			reg = <0xe6c30000 0x1000>;
+			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL
+					IRQ_DEFAULT_PRIORITY>;
+			clocks = <&cpg CPG_MOD 916>, <&cpg CPG_CORE CPG_CORE_CLK_CANFD>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			bus-speed = <500000>;
+			status = "disabled";
+			label = "can0";
+			sjw = <1>;
+			prop-seg = <8>;
+			phase-seg1 = <8>;
+			phase-seg2 = <3>;
+		};
+
 	};
 };

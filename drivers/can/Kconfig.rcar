@@ -1,0 +1,32 @@
+# Reneas RCar Gen3 CAN configuration options
+
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config CAN_RCAR
+	bool "Renesas RCar Gen3 CAN Driver"
+	depends on SOC_RENESAS_RCAR_CR7
+	help
+	  Enable Renesas RCar Gen3 CAN Driver.
+
+config CAN_RCAR_INT_THREAD_STACK_SIZE
+	int "Stack size for interrupt handler"
+	default 512
+	help
+	  Size of the stack used for internal thread which is ran for
+	  interrupt handling and incoming packets.
+
+config CAN_RCAR_INT_THREAD_PRIO
+	int "Priority for interrupt handler"
+	default 2
+	help
+	  Priority level of the internal thread which is ran for
+	  interrupt handling and incoming packets.
+
+config CAN_RCAR_MAX_FILTER
+	int "Maximum number of concurrent active filters"
+	default 5
+	range 1 32
+	help
+	  Defines the array size of the callback/msgq pointers.
+	  Must be at least the size of concurrent reads.
