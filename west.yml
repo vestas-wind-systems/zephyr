@@ -21,6 +21,8 @@ manifest:
   remotes:
     - name: upstream
       url-base: https://github.com/zephyrproject-rtos
+    - name: iotbzh
+      url-base: git@github.com:iotbzh
 
   #
   # Please add items below based on alphabetical order
@@ -81,7 +83,8 @@ manifest:
       revision: 277d70a65ab14d46bf1ec0935cf9bb28bbaa8ab9
       path: modules/hal/ti
     - name: libmetal
-      revision: 9d4ee2c3cfd5f49861939447990f3b7d7bf9bf94
+      remote: iotbzh
+      revision: renesas
       path: modules/hal/libmetal
     - name: hal_quicklogic
       repo-path: hal_quicklogic
