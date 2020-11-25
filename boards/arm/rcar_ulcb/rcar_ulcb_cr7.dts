@@ -16,6 +16,7 @@
 		zephyr,sram = &sram0;
 		zephyr,ipc_shm = &sram_shm;
 		zephyr,ipc = &mfis;
+		zephyr,can-primary = &can0;
 	};
 
 	sram_shm: memory@42000000 {
@@ -53,6 +54,14 @@
 		led0 = &user_led;
 		sw0 = &user_button;
 	};
+};
+
+&pfc {
+	status = "okay";
+};
+
+&can0 {
+	status = "okay";
 };
 
 &cmt0 {
