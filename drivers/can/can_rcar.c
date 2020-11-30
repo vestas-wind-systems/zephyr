@@ -44,8 +44,6 @@ struct can_rcar_data {
 	void *tx_callback_arg;
 	struct k_sem tx_int_sem;
 	uint32_t error_flags;
-
-	const struct device *dev;
 	struct k_thread int_thread;
 	k_thread_stack_t *int_thread_stack;
 	struct k_sem rx_int_sem;
@@ -53,7 +51,7 @@ struct can_rcar_data {
 	can_rx_callback_t rx_callback[CONFIG_CAN_RCAR_MAX_FILTER];
 	void *rx_callback_arg[CONFIG_CAN_RCAR_MAX_FILTER];
 	struct zcan_filter filter[CONFIG_CAN_RCAR_MAX_FILTER];
-
+	can_state_change_isr_t state_change_isr;
 	enum can_state state;
 };
 
@@ -104,9 +102,10 @@ struct can_rcar_data {
 
 
 
-#define	RCAR_CAN_STR		0x0842	/* Status Register */
-#define RCAR_CAN_STR_RSTST	(1 << 8) /* Reset Status Bit */
-#define RCAR_CAN_STR_HLTST	(1 << 9) /* Halt Status Bit */
+#define	RCAR_CAN_STR		0x0842	  /* Status Register */
+#define RCAR_CAN_STR_RSTST	(1 << 8)  /* Reset Status Bit */
+#define RCAR_CAN_STR_HLTST	(1 << 9)  /* Halt Status Bit */
+#define RCAR_CAN_STR_SLPST	(1 << 10) /* Sleep Status Bit */
 #define MAX_STR_READS		0x100
 
 #define	RCAR_CAN_BCR		0x0844	/* Bit Configuration Register */
@@ -210,36 +209,49 @@ static inline void can_rcar_write16(const struct can_rcar_cfg *config, uint32_t 
 	sys_write16(value, config->reg_addr + offs);
 }
 
-static void can_rcar_tx_done(const struct device *dev)
+static void can_rcar_tx_done(const struct device *dev, uint32_t error)
 {
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
 
-	/* we may keep track of in-flight messages there.
-	 * ATM: consider that we are sending messages one by one.
-	 */
 	if (data->tx_callback) {
-		data->tx_callback(CAN_TX_OK, data->tx_callback_arg);
+		data->tx_callback(error, data->tx_callback_arg);
 	} else {
-		data->error_flags = CAN_TX_OK;
+		data->error_flags = error;
 		k_sem_give(&data->tx_int_sem);
 	}
+}
+
+static void can_rcar_get_error_count(const struct can_rcar_cfg *config,
+				     struct can_bus_err_cnt *err_cnt)
+{
+	err_cnt->tx_err_cnt = sys_read8(config->reg_addr + RCAR_CAN_TECR);
+	err_cnt->rx_err_cnt = sys_read8(config->reg_addr + RCAR_CAN_RECR);
+}
+
+static void can_rcar_state_change(const struct device *dev, uint32_t newstate)
+{
+	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
+	struct can_rcar_data *data = DEV_CAN_DATA(dev);
+	struct can_bus_err_cnt err_cnt;
+
+	if (!data->state_change_isr)
+		return;
+
+	if (data->state == newstate) {
+		return;
+	}
+
+	can_rcar_get_error_count(config, &err_cnt);
+	data->state_change_isr(newstate, err_cnt);
 }
 
 static void can_rcar_error(const struct device *dev)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
-	struct can_rcar_data *data = DEV_CAN_DATA(dev);
-
-	/* We may check there if we failed to transmit a message.
-	 * In this case the caller should be notified with an error_status.
-	 */
-	uint8_t eifr, ecsr, txerr = 0, rxerr = 0;
+	uint8_t eifr, ecsr;
+	uint32_t txerr = 0;
 
 	eifr = sys_read8(config->reg_addr + RCAR_CAN_EIFR);
-	if (eifr & (RCAR_CAN_EIFR_EWIF | RCAR_CAN_EIFR_EPIF)) {
-		txerr = sys_read8(config->reg_addr + RCAR_CAN_TECR);
-		rxerr = sys_read8(config->reg_addr + RCAR_CAN_RECR);
-	}
 
 	if (eifr & RCAR_CAN_EIFR_BEIF) {
 
@@ -248,14 +260,17 @@ static void can_rcar_error(const struct device *dev)
 		if (ecsr & RCAR_CAN_ECSR_ADEF) {
 			LOG_ERR("ACK Delimiter Error\n");
 			sys_write8(~RCAR_CAN_ECSR_ADEF, config->reg_addr + RCAR_CAN_ECSR);
+			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_BE0F) {
 			LOG_ERR("Bit Error (dominant)\n");
 			sys_write8(~RCAR_CAN_ECSR_BE0F, config->reg_addr + RCAR_CAN_ECSR);
+			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_BE1F) {
 			LOG_ERR("Bit Error (recessive)\n");
 			sys_write8(~RCAR_CAN_ECSR_BE1F, config->reg_addr + RCAR_CAN_ECSR);
+			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_CEF) {
 			LOG_ERR("CRC Error\n");
@@ -264,6 +279,7 @@ static void can_rcar_error(const struct device *dev)
 		if (ecsr & RCAR_CAN_ECSR_AEF) {
 			LOG_ERR("ACK Error\n");
 			sys_write8(~RCAR_CAN_ECSR_AEF, config->reg_addr + RCAR_CAN_ECSR);
+			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_FEF) {
 			LOG_ERR("Form Error\n");
@@ -283,17 +299,17 @@ static void can_rcar_error(const struct device *dev)
 	}
 	if (eifr & RCAR_CAN_EIFR_EPIF) {
 		LOG_ERR("Error passive interrupt\n");
-		data->state = CAN_ERROR_PASSIVE;
 		/* Clear interrupt condition */
 		sys_write8(~RCAR_CAN_EIFR_EPIF, config->reg_addr + RCAR_CAN_EIFR);
+		can_rcar_state_change(dev, CAN_ERROR_PASSIVE);
 	}
 	if (eifr & RCAR_CAN_EIFR_BOEIF) {
 		LOG_ERR("Bus-off entry interrupt\n");
 		/* FIXME: if there is an in flight message there return an error */
 		sys_write8(RCAR_CAN_IER_ERSIE, config->reg_addr + RCAR_CAN_IER);
-		data->state = CAN_BUS_OFF;
 		/* Clear interrupt condition */
 		sys_write8(~RCAR_CAN_EIFR_BOEIF, config->reg_addr + RCAR_CAN_EIFR);
+		can_rcar_state_change(dev, CAN_BUS_OFF);
 	}
 	if (eifr & RCAR_CAN_EIFR_ORIF) {
 		LOG_ERR("Receive overrun error interrupt\n");
@@ -305,7 +321,12 @@ static void can_rcar_error(const struct device *dev)
 	}
 	if (eifr & RCAR_CAN_EIFR_BLIF) {
 		LOG_ERR("Bus lock detected interrupt\n");
-		sys_write8(~RCAR_CAN_EIFR_BLIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8((uint8_t)~RCAR_CAN_EIFR_BLIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
+	}
+
+	if (txerr) {
+		can_rcar_tx_done(dev, txerr);
 	}
 }
 
@@ -414,7 +435,7 @@ static void can_rcar_isr(const struct device *dev)
 		/* Clear the Tx interrupt */
 		isr &= ~RCAR_CAN_ISR_TXFF;
 		sys_write8(isr, config->reg_addr + RCAR_CAN_ISR);
-		can_rcar_tx_done(dev);
+		can_rcar_tx_done(dev, CAN_TX_OK);
 	}
 	if (isr & RCAR_CAN_ISR_RXFF) {
 		/* Clear the Rx interrupt */
@@ -597,12 +618,21 @@ unlock:
 static void can_rcar_register_state_change_isr(const struct device *dev,
 						can_state_change_isr_t isr)
 {
+	struct can_rcar_data *data = DEV_CAN_DATA(dev);
+
+	data->state_change_isr = isr;
 }
 
 static enum can_state can_rcar_get_state(const struct device *dev,
 					  struct can_bus_err_cnt *err_cnt)
 {
-	return CAN_ERROR_ACTIVE;
+	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
+	struct can_rcar_data *data = DEV_CAN_DATA(dev);
+
+	if (err_cnt) {
+		can_rcar_get_error_count(config, err_cnt);
+	}
+	return data->state;
 }
 
 #ifndef CONFIG_CAN_AUTO_BUS_OFF_RECOVERY
@@ -735,7 +765,7 @@ static int can_rcar_init(const struct device *dev)
 	data->int_thread_stack = can_rcar_thread_stack;
 	data->tx_callback = NULL;
 	memset(data->rx_callback, 0, sizeof(data->rx_callback));
-	data->dev = dev;
+	data->state = CAN_ERROR_ACTIVE;
 
 	if (config->clock_controller) {
 		clk = device_get_binding(config->clock_controller);
