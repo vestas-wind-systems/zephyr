@@ -425,6 +425,22 @@ static void can_rcar_isr(const struct device *dev)
 	}
 }
 
+static int can_rcar_leave_sleep_mode(const struct can_rcar_cfg *config)
+{
+	uint16_t ctlr, str;
+	int i;
+
+	ctlr = can_rcar_read16(config, RCAR_CAN_CTLR);
+	ctlr &= ~RCAR_CAN_CTLR_SLPM;
+	can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
+	for (i = 0; i < MAX_STR_READS; i++) {
+		str = can_rcar_read16(config, RCAR_CAN_STR);
+		if (!(str & RCAR_CAN_STR_SLPST))
+			return 0;
+	}
+	return -ETIME;
+}
+
 static int can_rcar_enter_reset_mode(const struct can_rcar_cfg *config, bool force)
 {
 	uint16_t ctlr;
@@ -752,6 +768,11 @@ static int can_rcar_init(const struct device *dev)
 	if (ret)
 		return ret;
 
+	ret = can_rcar_leave_sleep_mode(config);
+	__ASSERT(!ret, "Fail to leave CAN controller from sleep mode");
+	if (ret)
+		return ret;
+
 	can_rcar_set_bittiming(config, config->bus_speed);
 
 	ctlr = can_rcar_read16(config, RCAR_CAN_CTLR);
@@ -762,9 +783,6 @@ static int can_rcar_init(const struct device *dev)
 	ctlr |= RCAR_CAN_CTLR_MLM;	/* Overrun mode */
 	ctlr &= ~RCAR_CAN_CTLR_SLPM; /* Clear CAN Sleep mode */
 	can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
-	/* FIXME: these check are not supposed to be required */
-	while(can_rcar_read16(config, RCAR_CAN_CTLR) != ctlr)
-		can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
 
 	/* Accept all SID and EID */
 	sys_write32(0, config->reg_addr + RCAR_CAN_MKR8);
