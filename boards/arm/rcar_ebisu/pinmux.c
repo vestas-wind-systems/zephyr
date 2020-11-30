@@ -14,6 +14,8 @@
 	 const struct device *pfc =
 		 device_get_binding(DT_LABEL(DT_NODELABEL(pfc)));
 	 __ASSERT(pfc, "Fail to get pincontrol device");
+	 /* Make compiler happy if pfc is not used */
+	 (void) pfc;
 
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(can0), okay) && CONFIG_CAN
 	 /* CAN0_TX */
