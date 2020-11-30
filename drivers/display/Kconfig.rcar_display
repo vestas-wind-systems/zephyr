@@ -3,7 +3,14 @@
 # Copyright (c) 2020 IoT.BzH
 # SPDX-License-Identifier: Apache-2.0
 
-menuconfig RCAR_DISPLAY
+config RCAR_DISPLAY
 	bool "RCAR display driver"
+	select RCAR_DISPLAY_EARLY_HOST_INIT
 	help
 	  Enable driver for RCAR display.
+
+config RCAR_DISPLAY_EARLY_HOST_INIT
+	bool "Enable support for already initilized display"
+	help
+	  This options allow to reuse a display module that is already
+	  initialized by another entity.

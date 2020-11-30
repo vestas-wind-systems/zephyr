@@ -137,8 +137,6 @@ static int vspd_init(const struct device *dev) {
     LOG_DBG("Initializing rcar vspd driver");
 
 
-#define CONFIG_RCAR_DISPLAY_EARLY_HOST_INIT
-
 #ifdef CONFIG_RCAR_DISPLAY_EARLY_HOST_INIT
     int ix;
     for (ix = 0; ix <=  RCAR_VSPD2; ix++) {
@@ -199,4 +197,3 @@ static struct rcar_vspd_data rcar_vspd_data;
 DEVICE_AND_API_INIT(vspd, DT_PROP(DT_N_S_vspd, label), &vspd_init,
 		    &rcar_vspd_data, NULL, APPLICATION,
 		    CONFIG_APPLICATION_INIT_PRIORITY, &vspd_api);
-
