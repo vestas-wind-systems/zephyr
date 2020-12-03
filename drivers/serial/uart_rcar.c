@@ -22,10 +22,12 @@ struct uart_rcar_cfg {
 	int reg_size;
 	char *clock_controller;
 	struct rcar_cpg_clk mod_clk;
+	struct rcar_cpg_clk bus_clk;
 };
 
 struct uart_rcar_data {
 	struct uart_config current_config;
+	uint32_t clk_rate;
 };
 
 /* Registers */
@@ -118,13 +120,14 @@ static void uart_rcar_write_16(const struct uart_rcar_cfg *config,
 	sys_write16(value, config->reg_addr + offs);
 }
 
-static void uart_rcar_set_baudrate(const struct uart_rcar_cfg *config,
+static void uart_rcar_set_baudrate(const struct device *dev,
 				   uint32_t baud_rate)
 {
-	/* FIXME : get clk through clock driver ? */
-	uint32_t clk = 66660000;
-	uint8_t reg_val = ((clk + 16 * baud_rate) / (32 * baud_rate) - 1);
+	const struct uart_rcar_cfg *config = DEV_UART_CFG(dev);
+	struct uart_rcar_data *data = DEV_UART_DATA(dev);
+	uint8_t reg_val;
 
+	reg_val = ((data->clk_rate + 16 * baud_rate) / (32 * baud_rate) - 1);
 	uart_rcar_write_8(config, SCBRR, reg_val);
 
 	for (int i = 0; i < 100; i++) {
@@ -213,7 +216,7 @@ static int uart_rcar_configure(const struct device *dev,
 	uart_rcar_write_16(config, SCSMR, reg_val);
 
 	/* Set baudrate */
-	uart_rcar_set_baudrate(config, cfg->baudrate);
+	uart_rcar_set_baudrate(dev, cfg->baudrate);
 
 	/* FIFOs data count trigger configuration */
 	reg_val = uart_rcar_read_16(config, SCFCR);
@@ -246,7 +249,7 @@ static int uart_rcar_config_get(const struct device *dev,
 static int uart_rcar_init(const struct device *dev)
 {
 	const struct uart_rcar_cfg *config = DEV_UART_CFG(dev);
-	const struct uart_rcar_data *data = DEV_UART_DATA(dev);
+	struct uart_rcar_data *data = DEV_UART_DATA(dev);
 	const struct device *clk;
 	int ret;
 
@@ -259,6 +262,13 @@ static int uart_rcar_init(const struct device *dev)
 		ret = clock_control_on(clk,
 				(clock_control_subsys_t *) &config->mod_clk);
 
+		if (ret < 0) {
+			return ret;
+		}
+
+		ret = clock_control_get_rate(clk,
+				(clock_control_subsys_t *) &config->bus_clk,
+				&data->clk_rate);
 		if (ret < 0) {
 			return ret;
 		}
@@ -284,6 +294,10 @@ static const struct uart_driver_api uart_rcar_driver_api = {
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),	      \
 		.mod_clk.domain =					      \
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain),	      \
+		.bus_clk.module =					      \
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, module),	      \
+		.bus_clk.domain =					      \
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, domain),	      \
 	};								      \
 									      \
 	static struct uart_rcar_data uart_rcar_data_##n = {		      \
