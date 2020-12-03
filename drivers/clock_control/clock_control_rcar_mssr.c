@@ -48,6 +48,8 @@ static const uint16_t srcr[] = {
 #define CANFDCKCR_PARENT_CLK_RATE 800000000
 #define CANFDCKCR_DIVIDER_MASK 0x1FF
 
+#define S3D4_CLK_RATE 66600000
+
 static void cpg_write(uint32_t addr, uint32_t val)
 {
 	sys_write32(~val, CPGWPR);
@@ -160,22 +162,30 @@ static int cpg_get_rate(const struct device *dev,
 	const struct rcar_mssr_config *config = DEV_CFG(dev);
 	struct rcar_cpg_clk *clk = (struct rcar_cpg_clk *) sys;
 	uint32_t val;
+	int ret = 0;
 
-	/* CPG_MOD just support on/off, we only support canfd as
-	 * configurable rate.
-	 */
-	if (clk->domain != CPG_CORE || clk->module != CPG_CORE_CLK_CANFD)
+	if (clk->domain != CPG_CORE) {
 		return -ENOTSUP;
-
-	val = sys_read32(config->base_address + CANFDCKCR);
-	if (val & CANFDCKCR_CKSTP)
-		*rate = 0;
-	else {
-		val &= CANFDCKCR_DIVIDER_MASK;
-		*rate = CANFDCKCR_PARENT_CLK_RATE / (val + 1);
 	}
 
-	return 0;
+	switch (clk->module) {
+	case CPG_CORE_CLK_CANFD:
+		val = sys_read32(config->base_address + CANFDCKCR);
+		if (val & CANFDCKCR_CKSTP)
+			*rate = 0;
+		else {
+			val &= CANFDCKCR_DIVIDER_MASK;
+			*rate = CANFDCKCR_PARENT_CLK_RATE / (val + 1);
+		}
+		break;
+	case CPG_CORE_CLK_S3D4:
+		*rate = S3D4_CLK_RATE;
+		break;
+	default:
+		ret = -ENOTSUP;
+	}
+
+	return ret;
 }
 
 static int rcar_mssr_init(const struct device *dev)

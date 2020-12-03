@@ -11,5 +11,6 @@
 #define CPG_MOD				1	/* Module Clock */
 
 #define CPG_CORE_CLK_CANFD		0 /* CANFD clock*/
+#define CPG_CORE_CLK_S3D4		1
 
 #endif /* ZEPHYR_INCLUDE_DT_BINDINGS_CLOCK_RENESAS_CPG_MSSR_H_ */
