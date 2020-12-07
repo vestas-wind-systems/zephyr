@@ -6,6 +6,4 @@ config SOC_RENESAS_RCAR_CR7
 	select ARM
 	select CPU_CORTEX_R5
 	select GIC_V2
-	select PLATFORM_SPECIFIC_INIT
 	select CPU_HAS_DCLS
-

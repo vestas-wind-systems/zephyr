@@ -29,14 +29,3 @@ static int soc_init(const struct device *arg)
 }
 
 SYS_INIT(soc_init, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
-
-void z_platform_init(void)
-{
-	/*
-	 * Use normal exception vectors address range (0x0-0x1C).
-	 */
-	unsigned int sctlr = __get_SCTLR();
-
-	sctlr &= ~SCTLR_V_Msk;
-	__set_SCTLR(sctlr);
-}
