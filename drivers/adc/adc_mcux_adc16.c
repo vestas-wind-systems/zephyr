@@ -123,6 +123,16 @@ static int start_read(const struct device *dev,
 		LOG_ERR("Invalid oversampling");
 		return -EINVAL;
 	}
+
+#if defined(FSL_FEATURE_ADC16_HAS_CALIBRATION) && \
+	    FSL_FEATURE_ADC16_HAS_CALIBRATION
+	if (sequence->calibrate) {
+		ADC16_SetHardwareAverage(config->base,
+					 kADC16_HardwareAverageCount32);
+		ADC16_DoAutoCalibration(config->base);
+	}
+#endif
+
 	ADC16_SetHardwareAverage(config->base, mode);
 
 	data->buffer = sequence->buffer;
@@ -254,8 +264,10 @@ static int mcux_adc16_init(const struct device *dev)
 	ADC16_Init(base, &adc_config);
 #if defined(FSL_FEATURE_ADC16_HAS_CALIBRATION) && \
 	    FSL_FEATURE_ADC16_HAS_CALIBRATION
+#ifdef ADC_MCUX_ADC12_CALIBRATE_ON_BOOT
 	ADC16_SetHardwareAverage(base, kADC16_HardwareAverageCount32);
 	ADC16_DoAutoCalibration(base);
+#endif /* ADC_MCUX_ADC12_CALIBRATE_ON_BOOT */
 #endif
 	if (config->channel_mux_b) {
 		ADC16_SetChannelMuxMode(base, kADC16_ChannelMuxB);

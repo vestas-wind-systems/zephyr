@@ -60,8 +60,13 @@ config ADC_MCUX_ADC16_VREF_ALTERNATE
 
 endchoice
 
-endif # ADC_MCUX_ADC16
+config ADC_MCUX_ADC16_CALIBRATE_ON_BOOT
+	bool "Perform ADC auto-calibration on boot"
+	default y
+	help
+	  Perform ADC auto-calibration on boot during driver initialization.
 
+endif # ADC_MCUX_ADC16
 
 if ADC_MCUX_LPADC
 
