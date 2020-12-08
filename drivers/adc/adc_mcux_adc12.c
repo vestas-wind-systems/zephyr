@@ -121,6 +121,11 @@ static int mcux_adc12_start_read(const struct device *dev,
 			sequence->oversampling);
 		return -ENOTSUP;
 	}
+
+	if (sequence->calibrate) {
+		ADC12_DoAutoCalibration(config->base);
+	}
+
 	ADC12_SetHardwareAverage(config->base, mode);
 
 	data->buffer = sequence->buffer;
@@ -227,7 +232,9 @@ static int mcux_adc12_init(const struct device *dev)
 	adc_config.enableContinuousConversion = false;
 
 	ADC12_Init(base, &adc_config);
+#ifdef ADC_MCUX_ADC12_CALIBRATE_ON_BOOT
 	ADC12_DoAutoCalibration(base);
+#endif /* ADC_MCUX_ADC12_CALIBRATE_ON_BOOT */
 	ADC12_EnableHardwareTrigger(base, false);
 
 	config->irq_config_func(dev);

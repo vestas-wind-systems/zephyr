@@ -21,6 +21,13 @@ config ADC_MCUX_LPADC
 	help
 	  Enable the MCUX LPADC driver.
 
+config ADC_MCUX_ADC12_CALIBRATE_ON_BOOT
+	bool "Perform ADC auto-calibration on boot"
+	default y
+	depends on ADC_MCUX_ADC12
+	help
+	  Perform ADC auto-calibration on boot during driver initialization.
+
 if ADC_MCUX_ADC16
 
 choice
