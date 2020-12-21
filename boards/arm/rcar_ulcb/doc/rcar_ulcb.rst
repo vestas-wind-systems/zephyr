@@ -32,6 +32,7 @@ Here are R-Car ULCBs starter kit hardware capabilities :
 
 +------------+------------------------------------------------------------------------------------------------------+
 | CPU        | R-CAR H3 or R-CAR M3                                                                                 |
+|            |                                                                                                      |
 |            | - ARM CA57 (ARMv8) 1.5 GHz quad (H3) or dual (M3) core, with NEON/VFPv4, L1$ I/D 48K/32K, L2$ 2MB    |
 |            | - ARM CA53 (ARMv8) 1.2 GHz quad core, with NEON/VFPv4, L1$ I/D 32K/32K, L2$ 512K                     |
 |            | - ARM CR7 Dual Lockstep, L1$ 32K/32K                                                                 |
@@ -185,7 +186,7 @@ Here is information about these serial ports :
 
 .. Note:: The Zephyr console output is assigned to SCIF1 (commonly used on Kingfisher daughter board) with settings 115200 8N1 without hardware flow control by default.
 
-Here is UART interface pinout (depending on your Kingfisher board version) :
+Here is CN04 UART interface pinout (depending on your Kingfisher board version) :
 
 +--------+----------+----------+
 | Signal | Pin KF03 | Pin KF04 |
@@ -218,7 +219,7 @@ Here is information about these CAN interfaces :
 | CN18 CAN Interface | Kingfisher        | CAN1               | TCAN332GDCNT |
 +--------------------+-------------------+--------------------+--------------+
 
-.. Note:: The Zephyr CAN driver for rcar_ulcb boards is using CAN0 interfaces at 250kb/s and is allowing the use of both standard and extended ID CAN frames by default.
+.. Note:: The Zephyr CAN driver for rcar_ulcb boards is using CAN0 interface at 250kb/s and is allowing the use of both standard and extended ID CAN frames by default.
 
 Here is CAN interfaces pinout on Kingfisher board :
 

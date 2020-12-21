@@ -6,7 +6,7 @@ Renesas R-Car Ebisu
 Overview
 ********
 
-The Ebisu is an R-CarE3-specific evaluation board that can be used to evaluate systems using the R-CarE3 and to develop operating
+The Ebisu is an R-Car E3-specific evaluation board that can be used to evaluate systems using the R-Car E3 and to develop operating
 systems, device drivers, and applications. Using the Ebisu board allows developers to efficiently conduct required tasks such as
 evaluating the performance of an R-CarE3-based system and thus greatly reduce the turn-around time in their product development.
 
@@ -90,7 +90,7 @@ More information about the used chips can be found here :
 Supported Features
 ==================
 
-Here is current supported features when running Zephyr OS on the R-Car Ebisu CR7:
+Here are the current supported features when running Zephyr OS on the R-Car Ebisu CR7:
 
 +-----------+------------------------------+--------------------------------+
 | Interface | Driver/components            | Support level                  |
@@ -123,9 +123,9 @@ Ebisu :
 -------
 
 .. figure:: img/ebisu_io.jpg
-   :width: 1024px
+   :width: 649px
    :align: center
-   :height: 827px
+   :height: 437px
    :alt: R-Car Ebisu I/O
 
 PINMUX :
@@ -154,14 +154,14 @@ Ebisu board is only providing one physical serial port, this one is physically i
 | CN25 DEBUG SERIAL  | Ebisu             | SCIF2              | CP2102    | Used by U-BOOT & Linux               |
 +--------------------+-------------------+--------------------+-----------+--------------------------------------+
 
-.. Note:: Because bootloader and linux are commonly using this only available serial port, no serial port have been enabled by default in this board configuration. Everything is ready in order to use SCIF2 as serial port, Zephyr console or Zephyr shell. When used, SCIF2 serial port is initialized with settings 115200 8N1 without hardware flow control.
+.. Note:: Because bootloader and linux are commonly using this only available serial port, no serial port has been enabled by default in this board configuration. Everything is ready in order to use SCIF2 as serial port, Zephyr console or Zephyr shell. When used, SCIF2 serial port is initialized with settings 115200 8N1 without hardware flow control.
 
 CN25 connector is equipped with a standard USB 2.0 Micro-AB connector.
 
 CAN :
 -----
 
-Ebisu board is providing physical access to CAN interfaces through CN10 connector.
+Ebisu board provides physical access to CAN interfaces through CN10 connector.
 
 +--------------------+-------------------+--------------------+--------------+
 | Physical Interface | Physical Location | Software Interface | Transceiver  |
@@ -171,7 +171,7 @@ Ebisu board is providing physical access to CAN interfaces through CN10 connecto
 |                    |                   | CAN1               |              |
 +--------------------+-------------------+--------------------+--------------+
 
-.. Note:: The Zephyr CAN driver for rcar_ebisu board is using CAN0 interfaces at 250kb/s and is allowing the use of both standard and extended ID CAN frames by default.
+.. Note:: The Zephyr CAN driver for rcar_ebisu board uses CAN0 interfaces at 250kb/s and allows the use of both standard and extended ID CAN frames by default.
 
 Here is CAN interfaces pinout on Kingfisher board :
 
@@ -187,8 +187,7 @@ Here is CAN interfaces pinout on Kingfisher board :
 | 4   | GND    |
 +-----+--------+
 
-.. Note:: Two 62Ω are equipping CAN0 interface by default.
-
+.. Note:: Two 62Ω resistor equip CAN0 interface by default.
 
 IPM :
 -----
@@ -213,7 +212,7 @@ TODO !!!
 Programming and Debugging
 *************************
 
-The Cortex®-R7 of ebisu board needs to be started by the Cortex®-A cores. Cortex®-A cores are responsible to load the Cortex®-R7 binary application into the RAM, and get the Cortex®-R7 out of reset. The Cortex®-A can perform these steps at bootloader level or after the Linux system has booted through remoteproc.
+The Cortex®-R7 of ebisu board needs to be started by the Cortex®-A cores. Cortex®-A cores are responsible for loading the Cortex®-R7 binary application into the RAM, and getting the Cortex®-R7 out of reset. The Cortex®-A can perform these steps at bootloader level or after the Linux system has booted through remoteproc.
 
 Building
 ========
@@ -234,7 +233,7 @@ device]
 
 Debugging
 =========
-You can debug an application using OpenOCD and GDB. The Solution proposed below is using a OpenOCD custom version that support R-Car ULCB boards Cortex®-R7.
+You can debug an application using OpenOCD and GDB. The Solution proposed below is using a OpenOCD custom version that supports R-Car ULCB boards Cortex®-R7.
 
 Get Renesas ready OpenOCD version
 ---------------------------------
