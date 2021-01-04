@@ -6,10 +6,10 @@
  */
 
 /dts-v1/;
-#include <arm/renesas/rcar_cr7.dtsi>
+#include <arm/renesas/gen3/r8a77951.dtsi>
 
 / {
-	model = "Renesas m3ulcb/h3ulcb board";
+	model = "Renesas h3ulcb board";
 	compatible = "renesas,ulcb-cr7";
 
 	chosen {
@@ -57,6 +57,10 @@
 	};
 };
 
+&gpio6 {
+	status = "okay";
+};
+
 &pfc {
 	status = "okay";
 };
@@ -71,10 +75,6 @@
 };
 
 &mfis {
-	status = "okay";
-};
-
-&pfc {
 	status = "okay";
 };
 

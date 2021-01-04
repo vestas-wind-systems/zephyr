@@ -50,6 +50,7 @@
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
 			clocks = <&cpg CPG_MOD 907>;
+			status = "disabled";
 			label = "gpio5";
 		};
 
@@ -61,6 +62,7 @@
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
 			clocks = <&cpg CPG_MOD 906>;
+			status = "disabled";
 			label = "gpio6";
 		};
 
@@ -72,7 +74,6 @@
 
 		cmt0: timer@e60f0500 {
 			compatible = "rcar,cmt";
-			status = "disabled";
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL
 					IRQ_DEFAULT_PRIORITY>,
@@ -81,6 +82,7 @@
 			interrupt-names = "irq_0", "irq_1";
 			reg = <0xe60f0500 0x1004>;
 			clocks = <&cpg CPG_MOD 303>;
+			status = "disabled";
 			label = "cmt0";
 		};
 
@@ -93,7 +95,6 @@
 
 		mfis: mfis@e6260400 {
 			compatible = "renesas,rcar-mfis";
-			status = "disabled";
 			reg = <0xe6260400 0x10>;
 			interrupts = <GIC_SPI 224 IRQ_TYPE_LEVEL
 					IRQ_DEFAULT_PRIORITY>,
@@ -101,6 +102,7 @@
 					IRQ_DEFAULT_PRIORITY>;
 			interrupt-names = "rxo", "txf";
 			clocks = <&cpg CPG_MOD 213>;
+			status = "disabled";
 			label = "mfis";
 		};
 
@@ -113,35 +115,35 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			bus-speed = <500000>;
-			status = "disabled";
-			label = "can0";
 			sjw = <1>;
 			prop-seg = <8>;
 			phase-seg1 = <8>;
 			phase-seg2 = <3>;
+			status = "disabled";
+			label = "can0";
 		};
 
 		scif1: serial@e6e68000 {
 			compatible = "renesas,rcar-gen3-scif";
-			status = "disabled";
 			reg = <0xe6e68000 0x64>;
 			interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL
 					IRQ_DEFAULT_PRIORITY>;
 			clocks = <&cpg CPG_MOD 206>,
 			<&cpg CPG_CORE CPG_CORE_CLK_S3D4>;
 			current-speed = <115200>;
+			status = "disabled";
 			label = "scif1";
 		};
 
 		scif2: serial@e6e88000 {
 			compatible = "renesas,rcar-gen3-scif";
-			status = "disabled";
 			reg = <0xe6e88000 0x64>;
 			interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL
 					IRQ_DEFAULT_PRIORITY>;
 			clocks = <&cpg CPG_MOD 310>,
 			<&cpg CPG_CORE CPG_CORE_CLK_S3D4>;
 			current-speed = <115200>;
+			status = "disabled";
 			label = "scif2";
 		};
 	};

@@ -6,7 +6,7 @@
  */
 
 /dts-v1/;
-#include <arm/renesas/rcar_cr7.dtsi>
+#include <arm/renesas/gen3/r8a77990.dtsi>
 
 / {
 	model = "Renesas Ebisu board";
@@ -57,6 +57,10 @@
 		led0 = &user_led;
 		sw0  = &user_button;
 	};
+};
+
+&gpio5 {
+	status = "okay";
 };
 
 &cmt0 {
