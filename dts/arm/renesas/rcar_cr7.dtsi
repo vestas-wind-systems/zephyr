@@ -121,5 +121,26 @@
 			phase-seg2 = <3>;
 		};
 
+		scif1: serial@e6e68000 {
+			compatible = "renesas,rcar-gen3-scif";
+			status = "disabled";
+			reg = <0xe6e68000 0x64>;
+			interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL
+					IRQ_DEFAULT_PRIORITY>;
+			clocks = <&cpg CPG_MOD 206>;
+			current-speed = <115200>;
+			label = "scif1";
+		};
+
+		scif2: serial@e6e88000 {
+			compatible = "renesas,rcar-gen3-scif";
+			status = "disabled";
+			reg = <0xe6e88000 0x64>;
+			interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL
+					IRQ_DEFAULT_PRIORITY>;
+			clocks = <&cpg CPG_MOD 310>;
+			current-speed = <115200>;
+			label = "scif2";
+		};
 	};
 };

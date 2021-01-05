@@ -26,6 +26,18 @@
 	 pinmux_rcar_set_gpsr(pfc, 0, 13, true);
 	 pinmux_rcar_set_ipsr(pfc, 7, 8, 3);
 #endif
+
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(scif2), okay) && CONFIG_SERIAL
+	/* SCIF2 = UBOOT OUTPUT */
+	/* SCIF2_RX */
+	pinmux_rcar_set_gpsr(pfc, 5, 9, true);
+	pinmux_rcar_set_ipsr(pfc, 12, 12, 0);
+
+	/* SCIF2_TX */
+	pinmux_rcar_set_gpsr(pfc, 5, 8, true);
+	pinmux_rcar_set_ipsr(pfc, 12, 8, 0);
+#endif
+
 	 return 0;
  }
 

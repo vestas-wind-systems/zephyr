@@ -1,0 +1,11 @@
+# Reneas R-Car Gen3 UART configuration options
+
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config UART_RCAR
+	bool "Renesas R-Car Gen3 UART Driver"
+	select SERIAL_HAS_DRIVER
+	depends on SOC_RENESAS_RCAR_CR7
+	help
+	  Enable Renesas R-Car Gen3 UART Driver.
