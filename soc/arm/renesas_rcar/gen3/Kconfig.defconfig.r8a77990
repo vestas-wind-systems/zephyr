@@ -1,0 +1,9 @@
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+if SOC_R8A77990
+
+config SOC
+       default "r8a77990"
+
+endif # SOC_R8A77990

@@ -3,4 +3,4 @@
 
 config BOARD_RCAR_EBISU_CR7
 	bool "Cortex-R7 for Renesas Ebisu"
-	depends on SOC_RENESAS_RCAR_CR7
+	depends on SOC_R8A77990

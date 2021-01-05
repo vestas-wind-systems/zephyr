@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef _BOARD__H_
-#define _BOARD__H_
+#ifndef _SOC__H_
+#define _SOC__H_
 
 /* Define CMSIS configurations */
 #define __CR_REV		1U
@@ -15,4 +15,4 @@
 #define __GIC_PRESENT 0
 #define __TIM_PRESENT 0
 
-#endif /* _BOARD__H_ */
+#endif /* _SOC__H_ */

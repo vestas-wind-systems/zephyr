@@ -5,6 +5,6 @@
 
 config CLOCK_CONTROL_RCAR_MSSR
 	bool "RCar MSSR driver"
-	depends on SOC_RENESAS_RCAR_CR7
+	depends on SOC_SERIES_RCAR_GEN3
 	help
 	  Enable support for Renesas RCar MSSR driver.

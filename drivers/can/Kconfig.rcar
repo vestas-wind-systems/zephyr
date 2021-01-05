@@ -5,7 +5,7 @@
 
 config CAN_RCAR
 	bool "Renesas RCar Gen3 CAN Driver"
-	depends on SOC_RENESAS_RCAR_CR7
+	depends on SOC_SERIES_RCAR_GEN3
 	help
 	  Enable Renesas RCar Gen3 CAN Driver.
 
