@@ -96,8 +96,8 @@ static const struct pinmux_rcar_config pinmux_rcar_0_config = {
 		.reg_addr = DT_INST_REG_ADDR(0),	       
 };							       
 
-DEVICE_AND_API_INIT(pinmux_rcar, DT_INST_LABEL(0),
-			    &pinmux_rcar_init,
+DEVICE_DT_INST_DEFINE(0, &pinmux_rcar_init,
+			    device_pm_control_nop,
 			    NULL, &pinmux_rcar_0_config,
 			    PRE_KERNEL_1,
 			    CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,

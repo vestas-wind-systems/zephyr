@@ -305,9 +305,9 @@ static const struct gpio_driver_api gpio_rcar_driver_api = {
 	}; \
 	static struct gpio_rcar_data gpio_rcar_data_##n; \
 \
-	DEVICE_AND_API_INIT(rcar_gpio_##n, \
-			    DT_INST_LABEL(n), \
+	DEVICE_DT_INST_DEFINE(n, \
 			    gpio_rcar_init, \
+			    device_pm_control_nop, \
 			    &gpio_rcar_data_##n, \
 			    &gpio_rcar_cfg_##n, \
 			    POST_KERNEL, \
@@ -319,7 +319,7 @@ static const struct gpio_driver_api gpio_rcar_driver_api = {
 		IRQ_CONNECT(DT_INST_IRQN(n),				\
 			    0,						\
 			    gpio_rcar_port_isr,				\
-			    DEVICE_GET(rcar_gpio_##n), 0);		\
+			    DEVICE_DT_INST_GET(n), 0);			\
 									\
 		irq_enable(DT_INST_IRQN(n));				\
 	}

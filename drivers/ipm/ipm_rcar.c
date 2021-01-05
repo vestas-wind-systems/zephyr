@@ -173,8 +173,7 @@ static const struct rcar_mfis_config rcar_mfis_config = {
 
 static struct rcar_mfis_data rcar_mfis_data;
 
-DEVICE_AND_API_INIT(mfis, DT_INST_LABEL(0),
-		    &rcar_mfis_init,
+DEVICE_DT_INST_DEFINE(0, &rcar_mfis_init, device_pm_control_nop,
 		    &rcar_mfis_data, &rcar_mfis_config,
 		    PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,
 		    &rcar_mfis_driver_api);
@@ -183,11 +182,11 @@ static void rcar_mfis_config_func(const struct device *dev)
 {
 	IRQ_CONNECT(DT_INST_IRQ_BY_NAME(0, rxo, irq),
 		    DT_INST_IRQ_BY_NAME(0, rxo, priority),
-		    rcar_mfis_rx_isr, DEVICE_GET(mfis), 0);
+		    rcar_mfis_rx_isr, DEVICE_DT_INST_GET(0), 0);
 
 	IRQ_CONNECT(DT_INST_IRQ_BY_NAME(0, txf, irq),
 		    DT_INST_IRQ_BY_NAME(0, txf, priority),
-		    rcar_mfis_tx_isr, DEVICE_GET(mfis), 0);
+		    rcar_mfis_tx_isr, DEVICE_DT_INST_GET(0), 0);
 
 	irq_enable(DT_INST_IRQ_BY_NAME(0, rxo, irq));
 	irq_enable(DT_INST_IRQ_BY_NAME(0, txf, irq));

@@ -896,9 +896,8 @@ static const struct can_driver_api can_rcar_driver_api = {
 	};					       \
 	static struct can_rcar_data can_rcar_data_##n; \
 \
-	DEVICE_AND_API_INIT(rcar_can_##n, \
-			    DT_INST_LABEL(n), \
-			    can_rcar_init, \
+	DEVICE_DT_INST_DEFINE(n, can_rcar_init,\
+			    device_pm_control_nop,	\
 			    &can_rcar_data_##n, \
 			    &can_rcar_cfg_##n, \
 			    POST_KERNEL, \
@@ -910,9 +909,9 @@ static const struct can_driver_api can_rcar_driver_api = {
 		IRQ_CONNECT(DT_INST_IRQN(n),				\
 			    0,						\
 			    can_rcar_isr,				\
-			    DEVICE_GET(rcar_can_##n), 0);		\
+			    DEVICE_DT_INST_GET(n), 0);			\
 									\
-		irq_enable(DT_INST_IRQN(n));				\
+		irq_enable(DEVICE_DT_INST_GET(n));			\
 	}
 
 

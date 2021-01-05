@@ -204,8 +204,9 @@ static const struct clock_control_driver_api rcar_mssr_api = {
 		.base_address = DT_INST_REG_ADDR(inst)			\
 	};								\
 									\
-	DEVICE_AND_API_INIT(rcar_mssr##inst, DT_INST_LABEL(inst),	\
+	DEVICE_DT_INST_DEFINE(inst,					\
 			    &rcar_mssr_init,				\
+			    device_pm_control_nop,			\
 			    NULL, &rcar_mssr##inst##_config,		\
 			    PRE_KERNEL_1,				\
 			    CONFIG_KERNEL_INIT_PRIORITY_OBJECTS,	\
