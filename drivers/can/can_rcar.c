@@ -34,6 +34,7 @@ struct can_rcar_cfg {
 	uint8_t prop_seg;
 	uint8_t phase_seg1;
 	uint8_t phase_seg2;
+	uint16_t sample_point;
 	size_t int_thread_stack_size;
 	int int_thread_priority;
 };
@@ -363,10 +364,10 @@ static void can_rcar_rx_handler(const struct device *dev)
 	val = sys_read32(config->reg_addr + RCAR_CAN_MB_60);
 	if (val & RCAR_CAN_MB_IDE) {
 		msg.id_type = CAN_EXTENDED_IDENTIFIER;
-		msg.ext_id = val & RCAR_CAN_MB_EID_MASK;
+		msg.id = val & RCAR_CAN_MB_EID_MASK;
 	} else {
 		msg.id_type = CAN_STANDARD_IDENTIFIER;
-		msg.std_id = (val & RCAR_CAN_MB_SID_MASK) >> RCAR_CAN_MB_SID_SHIFT;
+		msg.id = (val & RCAR_CAN_MB_SID_MASK) >> RCAR_CAN_MB_SID_SHIFT;
 	}
 
 	if (val & RCAR_CAN_MB_RTR)
@@ -522,67 +523,14 @@ static int can_rcar_enter_operation_mode(const struct can_rcar_cfg *config)
 	return 0;
 }
 
-/* Bit Configuration Register settings */
-#define RCAR_CAN_BCR_TSEG1(x)	(((x) & 0x0f) << 20)
-#define RCAR_CAN_BCR_BPR(x)	(((x) & 0x3ff) << 8)
-#define RCAR_CAN_BCR_SJW(x)	(((x) & 0x3) << 4)
-#define RCAR_CAN_BCR_TSEG2(x)	((x) & 0x07)
-
-static void can_rcar_set_bittiming(const struct can_rcar_cfg *config, uint32_t bitrate)
-{
-	uint16_t brp;
-	uint32_t bcr;
-
-	__ASSERT((config->phase_seg1 + config->prop_seg >= 4) &&
-		 (config->phase_seg1 + config->prop_seg <= 16),
-		 "4 <= phase-seg1 + prop-seg <= 16");
-
-	__ASSERT((config->sjw >= 1) && (config->sjw <= 4),
-		 "1 <= sjw <= 4");
-
-	__ASSERT((config->phase_seg2 >= 2) && (config->phase_seg2 <= 8),
-		 "2 <= phase-seg2 <= 8");
-
-	const uint8_t bit_length = 1 + config->prop_seg + config->phase_seg1 +
-		config->phase_seg2;
-
-	__ASSERT((config->bus_clk.rate % (bit_length * bitrate)) == 0,
-		 "Prescaler is not a natural number!");
-
-	brp = config->bus_clk.rate / (bit_length * bitrate) - 1;
-	__ASSERT((brp >= 0) && (brp <= 1023),
-		 "0 <= prescaler division ratio (BRP) <= 1023");
-
-	bcr = RCAR_CAN_BCR_TSEG1(config->phase_seg1 + config->prop_seg - 1) |
-	      RCAR_CAN_BCR_BPR(brp) | RCAR_CAN_BCR_SJW(config->sjw - 1) |
-	      RCAR_CAN_BCR_TSEG2(config->phase_seg2 - 1);
-	/* Don't overwrite CLKR with 32-bit BCR access; CLKR has 8-bit access.
-	 * All the registers are big-endian but they get byte-swapped on 32-bit
-	 * read/write (but not on 8-bit, contrary to the manuals)...
-	 */
-	sys_write32((bcr << 8) | RCAR_CAN_CLKR_CLKP2, config->reg_addr + RCAR_CAN_BCR);
-}
-
-int can_rcar_runtime_configure(const struct device *dev, enum can_mode mode,
-				uint32_t bitrate)
+int can_rcar_set_mode(const struct device *dev, enum can_mode mode)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
-	uint8_t tcr;
+	uint8_t tcr = 0;
 	int ret = 0;
 
-	if (!bitrate)
-		bitrate = config->bus_speed;
-
 	k_mutex_lock(&data->inst_mutex, K_FOREVER);
-
-	/* Changing bittiming should be done in reset mode */
-	ret = can_rcar_enter_reset_mode(config, true);
-	if (ret != 0)
-		goto unlock;
-
-	can_rcar_set_bittiming(config, bitrate);
-
 	switch (mode) {
 	case CAN_NORMAL_MODE:
 		tcr = 0;
@@ -607,6 +555,57 @@ int can_rcar_runtime_configure(const struct device *dev, enum can_mode mode,
 		goto unlock;
 
 	sys_write8(tcr, config->reg_addr + RCAR_CAN_TCR);
+	/* Go back to operation mode */
+	ret = can_rcar_enter_operation_mode(config);
+
+unlock:
+	k_mutex_unlock(&data->inst_mutex);
+	return ret;
+
+}
+
+/* Bit Configuration Register settings */
+#define RCAR_CAN_BCR_TSEG1(x)	(((x) & 0x0f) << 20)
+#define RCAR_CAN_BCR_BPR(x)	(((x) & 0x3ff) << 8)
+#define RCAR_CAN_BCR_SJW(x)	(((x) & 0x3) << 4)
+#define RCAR_CAN_BCR_TSEG2(x)	((x) & 0x07)
+
+static void can_rcar_set_bittiming(const struct can_rcar_cfg *config,
+				   const struct can_timing *timing)
+{
+	uint32_t bcr;
+
+	bcr = RCAR_CAN_BCR_TSEG1(timing->phase_seg1 - 1) |
+	      RCAR_CAN_BCR_BPR(timing->prescaler - 1) |
+	      RCAR_CAN_BCR_SJW(timing->sjw - 1) |
+	      RCAR_CAN_BCR_TSEG2(timing->phase_seg2 - 1);
+
+	/* Don't overwrite CLKR with 32-bit BCR access; CLKR has 8-bit access.
+	 * All the registers are big-endian but they get byte-swapped on 32-bit
+	 * read/write (but not on 8-bit, contrary to the manuals)...
+	 */
+	sys_write32((bcr << 8) | RCAR_CAN_CLKR_CLKP2, config->reg_addr + RCAR_CAN_BCR);
+}
+
+int can_rcar_set_timing(const struct device *dev,
+			 const struct can_timing *timing,
+			 const struct can_timing *timing_data)
+{
+	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
+	struct can_rcar_data *data = DEV_CAN_DATA(dev);
+	int ret = 0;
+
+	ARG_UNUSED(timing_data);
+
+	k_mutex_lock(&data->inst_mutex, K_FOREVER);
+
+	/* Changing bittiming should be done in reset mode */
+	ret = can_rcar_enter_reset_mode(config, true);
+	if (ret != 0)
+		goto unlock;
+
+	can_rcar_set_bittiming(config, timing);
+
 	/* Go back to operation mode */
 	ret = can_rcar_enter_operation_mode(config);
 
@@ -656,8 +655,7 @@ int can_rcar_send(const struct device *dev, const struct zcan_frame *msg,
 		    "ID type: %s, "
 		    "Remote Frame: %s"
 		    , msg->dlc, dev->name
-		    , msg->id_type == CAN_STANDARD_IDENTIFIER ?
-				      msg->std_id :  msg->ext_id
+		    , msg->id
 		    , msg->id_type == CAN_STANDARD_IDENTIFIER ?
 		    "standard" : "extended"
 		    , msg->rtr == CAN_DATAFRAME ? "no" : "yes");
@@ -676,9 +674,9 @@ int can_rcar_send(const struct device *dev, const struct zcan_frame *msg,
 	k_sem_reset(&data->tx_int_sem);
 
 	if (msg->id_type == CAN_STANDARD_IDENTIFIER) {
-		identifier = msg->std_id << RCAR_CAN_MB_SID_SHIFT;
+		identifier = msg->id << RCAR_CAN_MB_SID_SHIFT;
 	} else {
-		identifier = msg->ext_id | RCAR_CAN_MB_IDE;
+		identifier = msg->id | RCAR_CAN_MB_IDE;
 	}
 
 	if (msg->rtr == CAN_REMOTEREQUEST) {
@@ -755,6 +753,7 @@ static int can_rcar_init(const struct device *dev)
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
 	const struct device *clk;
+	struct can_timing timing;
 	int ret;
 	uint16_t ctlr;
 
@@ -803,7 +802,36 @@ static int can_rcar_init(const struct device *dev)
 	if (ret)
 		return ret;
 
-	can_rcar_set_bittiming(config, config->bus_speed);
+	timing.sjw = config->sjw;
+	if (config->sample_point) {
+		ret = can_calc_timing(dev, &timing, config->bus_speed,
+				      config->sample_point);
+		if (ret == -EINVAL) {
+			LOG_ERR("Can't find timing for given param");
+			return -EIO;
+		}
+		LOG_DBG("Presc: %d, TS1: %d, TS2: %d",
+			timing.prescaler, timing.phase_seg1, timing.phase_seg2);
+		LOG_DBG("Sample-point err : %d", ret);
+	} else {
+		timing.prop_seg = config->prop_seg;
+		timing.phase_seg1 = config->phase_seg1;
+		timing.phase_seg2 = config->phase_seg2;
+		ret = can_calc_prescaler(dev, &timing, config->bus_speed);
+		if (ret) {
+			LOG_WRN("Bitrate error: %d", ret);
+		}
+	}
+
+	ret = can_rcar_set_timing(dev, &timing, NULL);
+	if (ret) {
+		return ret;
+	}
+
+	ret = can_rcar_set_mode(dev, CAN_NORMAL_MODE);
+	if (ret) {
+		return ret;
+	}
 
 	ctlr = can_rcar_read16(config, RCAR_CAN_CTLR);
 	ctlr |= RCAR_CAN_CTLR_IDFM_MIXED; /* Select mixed ID mode */
@@ -857,8 +885,17 @@ static int can_rcar_init(const struct device *dev)
 	return 0;
 }
 
+static int can_rcar_get_core_clock(const struct device *dev, uint32_t *rate)
+{
+	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
+
+	*rate = config->bus_clk.rate;
+	return 0;
+}
+
 static const struct can_driver_api can_rcar_driver_api = {
-	.configure = can_rcar_runtime_configure,
+	.set_mode = can_rcar_set_mode,
+	.set_timing = can_rcar_set_timing,
 	.send = can_rcar_send,
 	.attach_isr = can_rcar_attach_isr,
 	.detach = can_rcar_detach,
@@ -866,7 +903,22 @@ static const struct can_driver_api can_rcar_driver_api = {
 #ifndef CONFIG_CAN_AUTO_BUS_OFF_RECOVERY
 	.recover = can_rcar_recover,
 #endif
-	.register_state_change_isr = can_rcar_register_state_change_isr
+	.register_state_change_isr = can_rcar_register_state_change_isr,
+	.get_core_clock = can_rcar_get_core_clock,
+	.timing_min = {
+		.sjw = 0x1,
+		.prop_seg = 0x00,
+		.phase_seg1 = 0x04,
+		.phase_seg2 = 0x02,
+		.prescaler = 0x01
+	},
+	.timing_max = {
+		.sjw = 0x4,
+		.prop_seg = 0x00,
+		.phase_seg1 = 0x10,
+		.phase_seg2 = 0x08,
+		.prescaler = 0x400
+	}
 };
 
 /* Device Instantiation */
@@ -888,9 +940,10 @@ static const struct can_driver_api can_rcar_driver_api = {
 		.bus_clk.rate = 40000000,		  \
 		.bus_speed = DT_INST_PROP(n, bus_speed), \
 		.sjw = DT_INST_PROP(n, sjw), \
-		.prop_seg = DT_INST_PROP(n, prop_seg), \
-		.phase_seg1 = DT_INST_PROP(n, phase_seg1), \
-		.phase_seg2 = DT_INST_PROP(n, phase_seg2), \
+		.prop_seg = DT_INST_PROP_OR(n, prop_seg, 0), \
+		.phase_seg1 = DT_INST_PROP_OR(n, phase_seg1, 0), \
+		.phase_seg2 = DT_INST_PROP_OR(n, phase_seg2, 0), \
+		.sample_point = DT_INST_PROP_OR(n, sample_point, 0),	\
 		.int_thread_stack_size = CONFIG_CAN_RCAR_INT_THREAD_STACK_SIZE, \
 		.int_thread_priority = CONFIG_CAN_RCAR_INT_THREAD_PRIO, \
 	};					       \
@@ -911,7 +964,7 @@ static const struct can_driver_api can_rcar_driver_api = {
 			    can_rcar_isr,				\
 			    DEVICE_DT_INST_GET(n), 0);			\
 									\
-		irq_enable(DEVICE_DT_INST_GET(n));			\
+		irq_enable(DT_INST_IRQN(n));				\
 	}
 
 
