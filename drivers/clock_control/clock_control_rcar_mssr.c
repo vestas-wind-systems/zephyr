@@ -89,7 +89,7 @@ static int cpg_core_clock_endisable(const struct device *dev,
 		}
 		divider = (CANFDCKCR_PARENT_CLK_RATE / rate) - 1;
 		if (divider > CANFDCKCR_DIVIDER_MASK) {
-			__ASSERT(true, "Can not genearate %u from CANFD parent clock", rate);
+			__ASSERT(true, "Can not generate %u from CANFD parent clock", rate);
 			ret = -EINVAL;
 			goto unlock;
 		}
