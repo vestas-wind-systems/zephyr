@@ -56,124 +56,142 @@ struct can_rcar_data {
 	enum can_state state;
 };
 
-#define DEV_CAN_CFG(dev)						\
+#define DEV_CAN_CFG(dev) \
 	((const struct can_rcar_cfg *)(dev)->config)
 
 #define DEV_CAN_DATA(dev) ((struct can_rcar_data *const)(dev)->data)
 
-#define	RCAR_CAN_CTLR		0x0840	/* Control Register */
+/* Control Register */
+#define RCAR_CAN_CTLR           0x0840
 /* Control Register bits */
-#define RCAR_CAN_CTLR_BOM	(3 << 11) /* Bus-Off Recovery Mode Bits */
-#define RCAR_CAN_CTLR_BOM_ENT	(1 << 11) /* Entry to halt mode */
-					/* at bus-off entry */
-#define RCAR_CAN_CTLR_SLPM	(1 << 10)
+#define RCAR_CAN_CTLR_BOM       (3 << 11)       /* Bus-Off Recovery Mode Bits */
+#define RCAR_CAN_CTLR_BOM_ENT   (1 << 11)       /* Entry to halt mode */
+                                                /* at bus-off entry */
+#define RCAR_CAN_CTLR_SLPM      (1 << 10)
 
-#define RCAR_CAN_CTLR_CANM_HALT	(1 << 9)
+#define RCAR_CAN_CTLR_CANM_HALT (1 << 9)
 #define RCAR_CAN_CTLR_CANM_RESET (1 << 8)
 #define RCAR_CAN_CTLR_CANM_MASK (3 << 8)
 
-#define RCAR_CAN_CTLR_MLM	(1 << 3) /* Message Lost Mode Select */
-#define RCAR_CAN_CTLR_IDFM	(3 << 1) /* ID Format Mode Select Bits */
-#define RCAR_CAN_CTLR_IDFM_MIXED (1 << 2) /* Mixed ID mode */
-#define RCAR_CAN_CTLR_MBM	(1 << 0) /* Mailbox Mode select */
+#define RCAR_CAN_CTLR_MLM       (1 << 3)        /* Message Lost Mode Select */
+#define RCAR_CAN_CTLR_IDFM      (3 << 1)        /* ID Format Mode Select Bits */
+#define RCAR_CAN_CTLR_IDFM_MIXED (1 << 2)       /* Mixed ID mode */
+#define RCAR_CAN_CTLR_MBM       (1 << 0)        /* Mailbox Mode select */
 
-#define	RCAR_CAN_MKR0		0x0430	/* Mask Register 0 */
-#define	RCAR_CAN_MKR1		0x0434	/* Mask Register 1 */
-#define	RCAR_CAN_MKR2		0x0400	/* Mask Register 2 */
-#define	RCAR_CAN_MKR3		0x0404	/* Mask Register 3 */
-#define	RCAR_CAN_MKR4		0x0408	/* Mask Register 4 */
-#define	RCAR_CAN_MKR5		0x040C	/* Mask Register 5 */
-#define	RCAR_CAN_MKR6		0x0410	/* Mask Register 6 */
-#define	RCAR_CAN_MKR7		0x0414	/* Mask Register 7 */
-#define	RCAR_CAN_MKR8		0x0418	/* Mask Register 8 */
-#define	RCAR_CAN_MKR9		0x041C	/* Mask Register 9 */
-#define	RCAR_CAN_FIDCR0		0x0420	/* FIFO Received ID Compare Register 0 */
-#define	RCAR_CAN_FIDCR1		0x0424	/* FIFO Received ID Compare Register 1 */
+/* Mask Register */
+#define RCAR_CAN_MKR0           0x0430
+#define RCAR_CAN_MKR1           0x0434
+#define RCAR_CAN_MKR2           0x0400
+#define RCAR_CAN_MKR3           0x0404
+#define RCAR_CAN_MKR4           0x0408
+#define RCAR_CAN_MKR5           0x040C
+#define RCAR_CAN_MKR6           0x0410
+#define RCAR_CAN_MKR7           0x0414
+#define RCAR_CAN_MKR8           0x0418
+#define RCAR_CAN_MKR9           0x041C
+
+/* FIFO Received ID Compare Register 0 */
+#define RCAR_CAN_FIDCR0         0x0420
+
+/* FIFO Received ID Compare Register 1 */
+#define RCAR_CAN_FIDCR1         0x0424
+
 /* FIFO Received ID Compare Registers 0 and 1 bits */
-#define RCAR_CAN_FIDCR_IDE	(1 << 31) /* ID Extension Bit */
-#define RCAR_CAN_FIDCR_RTR	(1 << 30) /* Remote Transmission Request Bit */
+#define RCAR_CAN_FIDCR_IDE      (1 << 31)       /* ID Extension Bit */
+#define RCAR_CAN_FIDCR_RTR      (1 << 30)       /* RTR Bit */
 
-#define	RCAR_CAN_MKIVLR0	0x0438	/* Mask Invalid Register 0 */
-#define	RCAR_CAN_MKIVLR1	0x0428	/* Mask Invalid Register 1 */
+/* Mask Invalid Register 0 */
+#define RCAR_CAN_MKIVLR0        0x0438
+/* Mask Invalid Register 1 */
+#define RCAR_CAN_MKIVLR1        0x0428
+/* Mailbox Interrupt Enable Registers*/
+#define RCAR_CAN_MIER0          0x043C
+#define RCAR_CAN_MIER1          0x042C
+#define RCAR_CAN_MIER1_RXFIE    (1 << 28)       /* Receive  FIFO Interrupt Enable */
+#define RCAR_CAN_MIER1_TXFIE    (1 << 24)       /* Transmit FIFO Interrupt Enable */
 
-#define	RCAR_CAN_MIER0		0x043C	/* Mailbox Interrupt Enable Register 0 */
-#define	RCAR_CAN_MIER1		0x042C	/* Mailbox Interrupt Enable Register 1 */
-#define RCAR_CAN_MIER1_RXFIE	(1 << 28) /* Receive  FIFO Interrupt Enable */
-#define RCAR_CAN_MIER1_TXFIE	(1 << 24) /* Transmit FIFO Interrupt Enable */
+#define RCAR_CAN_STR            0x0842          /* Status Register */
+#define RCAR_CAN_STR_RSTST      (1 << 8)        /* Reset Status Bit */
+#define RCAR_CAN_STR_HLTST      (1 << 9)        /* Halt Status Bit */
+#define RCAR_CAN_STR_SLPST      (1 << 10)       /* Sleep Status Bit */
+#define MAX_STR_READS           0x100
 
+/* Bit Configuration Register */
+#define RCAR_CAN_BCR            0x0844
 
+/* Clock Select Register */
+#define RCAR_CAN_CLKR           0x0847
+#define RCAR_CAN_CLKR_EXT_CLOCK 0x3     /* External input clock */
+#define RCAR_CAN_CLKR_CLKP2     0x1
+#define RCAR_CAN_CLKR_CLKP1     0x0
 
-#define	RCAR_CAN_STR		0x0842	  /* Status Register */
-#define RCAR_CAN_STR_RSTST	(1 << 8)  /* Reset Status Bit */
-#define RCAR_CAN_STR_HLTST	(1 << 9)  /* Halt Status Bit */
-#define RCAR_CAN_STR_SLPST	(1 << 10) /* Sleep Status Bit */
-#define MAX_STR_READS		0x100
+/* Error Interrupt Enable Register */
+#define RCAR_CAN_EIER           0x084C
 
-#define	RCAR_CAN_BCR		0x0844	/* Bit Configuration Register */
+/* Interrupt Enable Register */
+#define RCAR_CAN_IER            0x0860
+#define RCAR_CAN_IER_ERSIE      (1 << 5)        /* Error (ERS) Interrupt Enable Bit */
+#define RCAR_CAN_IER_RXFIE      (1 << 4)        /* Rx FIFO Interrupt Enable Bit */
+#define RCAR_CAN_IER_TXFIE      (1 << 3)        /* Tx FIFO Interrupt Enable Bit */
 
-#define	RCAR_CAN_CLKR		0x0847	/* Clock Select Register */
-#define	RCAR_CAN_CLKR_EXT_CLOCK	0x3     /* External input clock */
-#define	RCAR_CAN_CLKR_CLKP2	0x1
-#define	RCAR_CAN_CLKR_CLKP1	0x0
+/* Interrupt Status Register */
+#define RCAR_CAN_ISR            0x0861
+#define RCAR_CAN_ISR_ERSF       (1 << 5)        /* Error (ERS) Interrupt Status Bit */
+#define RCAR_CAN_ISR_RXFF       (1 << 4)        /* Reception FIFO Interrupt */
+                                                /* Status Bit */
+#define RCAR_CAN_ISR_TXFF       (1 << 3)        /* Transmission FIFO Interrupt */
+                                                /* Status Bit */
 
-#define	RCAR_CAN_EIER		0x084C	/* Error Interrupt Enable Register */
+/* Receive FIFO Control Register */
+#define RCAR_CAN_RFCR           0x0848
+#define RCAR_CAN_RFCR_RFE       (1 << 0)        /* Receive FIFO Enable */
+#define RCAR_CAN_RFCR_RFEST     (1 << 7)        /* Receive FIFO Empty Flag */
 
-#define	RCAR_CAN_IER		0x0860	/* Interrupt Enable Register */
-#define RCAR_CAN_IER_ERSIE	(1 << 5) /* Error (ERS) Interrupt Enable Bit */
-#define RCAR_CAN_IER_RXFIE	(1 << 4) /* Reception FIFO Interrupt Enable Bit */
-#define RCAR_CAN_IER_TXFIE	(1 << 3) /* Transmission FIFO Interrupt Enable Bit */
+/* Receive FIFO Pointer Control Register */
+#define RCAR_CAN_RFPCR          0x0849
 
-#define	RCAR_CAN_ISR		0x0861	/* Interrupt Status Register */
-#define RCAR_CAN_ISR_ERSF	(1 << 5) /* Error (ERS) Interrupt Status Bit */
-#define RCAR_CAN_ISR_RXFF	(1 << 4) /* Reception FIFO Interrupt */
-					/* Status Bit */
-#define RCAR_CAN_ISR_TXFF	(1 << 3) /* Transmission FIFO Interrupt */
-					/* Status Bit */
+/* Transmit FIFO Control Register */
+#define RCAR_CAN_TFCR           0x084A
+#define RCAR_CAN_TFCR_TFE       (1 << 0)        /* Transmit FIFO Enable */
+#define RCAR_CAN_TFCR_TFUST     (7 << 1)        /* Transmit FIFO Unsent Message */
+                                                /* Number Status Bits */
+#define RCAR_CAN_TFCR_TFUST_SHIFT 1             /* Offset of Transmit FIFO Unsent */
+                                                /* Message Number Status Bits */
 
-#define RCAR_CAN_RFCR           0x0848	/* Receive FIFO Control Register */
-#define RCAR_CAN_RFCR_RFE	(1 << 0) /* Receive FIFO Enable */
-#define RCAR_CAN_RFCR_RFEST	(1 << 7) /* Receive FIFO Empty Flag */
-
-#define	RCAR_CAN_RFPCR		0x0849	/* Receive FIFO Pointer Control Register */
-
-#define	RCAR_CAN_TFCR		0x084A	/* Transmit FIFO Control Register */
-#define RCAR_CAN_TFCR_TFE	(1 << 0)/* Transmit FIFO Enable */
-#define RCAR_CAN_TFCR_TFUST	(7 << 1)/* Transmit FIFO Unsent Message */
-					/* Number Status Bits */
-#define RCAR_CAN_TFCR_TFUST_SHIFT 1	/* Offset of Transmit FIFO Unsent */
-					/* Message Number Status Bits */
-
-#define	RCAR_CAN_TFPCR		0x084B	/* Transmit FIFO Pointer Control Register */
+/* Transmit FIFO Pointer Control Register */
+#define RCAR_CAN_TFPCR          0x084B
 
 /* Error Code Store Register*/
-#define	RCAR_CAN_ECSR		0x0850	/* Error Code Store Register */
-#define RCAR_CAN_ECSR_EDPM	(1 << 7) /* Error Display Mode Select Bit */
-#define RCAR_CAN_ECSR_ADEF	(1 << 6) /* ACK Delimiter Error Flag */
-#define RCAR_CAN_ECSR_BE0F	(1 << 5) /* Bit Error (dominant) Flag */
-#define RCAR_CAN_ECSR_BE1F	(1 << 4) /* Bit Error (recessive) Flag */
-#define RCAR_CAN_ECSR_CEF	(1 << 3) /* CRC Error Flag */
-#define RCAR_CAN_ECSR_AEF	(1 << 2) /* ACK Error Flag */
-#define RCAR_CAN_ECSR_FEF	(1 << 1) /* Form Error Flag */
-#define RCAR_CAN_ECSR_SEF	(1 << 0) /* Stuff Error Flag */
+#define RCAR_CAN_ECSR           0x0850          /* Error Code Store Register */
+#define RCAR_CAN_ECSR_EDPM      (1 << 7)        /* Error Display Mode Select Bit */
+#define RCAR_CAN_ECSR_ADEF      (1 << 6)        /* ACK Delimiter Error Flag */
+#define RCAR_CAN_ECSR_BE0F      (1 << 5)        /* Bit Error (dominant) Flag */
+#define RCAR_CAN_ECSR_BE1F      (1 << 4)        /* Bit Error (recessive) Flag */
+#define RCAR_CAN_ECSR_CEF       (1 << 3)        /* CRC Error Flag */
+#define RCAR_CAN_ECSR_AEF       (1 << 2)        /* ACK Error Flag */
+#define RCAR_CAN_ECSR_FEF       (1 << 1)        /* Form Error Flag */
+#define RCAR_CAN_ECSR_SEF       (1 << 0)        /* Stuff Error Flag */
 
-#define	RCAR_CAN_TCR		0x0858	/* Test Control Register */
-#define RCAR_CAN_TCR_TSTE        (1 << 0) /* Test Mode Enable Bit*/
+/* Test Control Register */
+#define RCAR_CAN_TCR            0x0858
+#define RCAR_CAN_TCR_TSTE        (1 << 0)       /* Test Mode Enable Bit*/
 #define RCAR_CAN_TCR_LISTEN_ONLY (1 << 1)
-#define RCAR_CAN_TCR_INT_LOOP    (3 << 1) /* Internal loopback*/
+#define RCAR_CAN_TCR_INT_LOOP    (3 << 1)       /* Internal loopback*/
 
 /* Error Interrupt Factor Judge Register bits */
 #define RCAR_CAN_EIFR           0x084D
-#define RCAR_CAN_EIFR_BLIF	(1 << 7) /* Bus Lock Detect Flag */
-#define RCAR_CAN_EIFR_OLIF	(1 << 6) /* Overload Frame Transmission */
-					 /* Detect Flag */
-#define RCAR_CAN_EIFR_ORIF	(1 << 5) /* Receive Overrun Detect Flag */
-#define RCAR_CAN_EIFR_BORIF	(1 << 4) /* Bus-Off Recovery Detect Flag */
-#define RCAR_CAN_EIFR_BOEIF	(1 << 3) /* Bus-Off Entry Detect Flag */
-#define RCAR_CAN_EIFR_EPIF	(1 << 2) /* Error Passive Detect Flag */
-#define RCAR_CAN_EIFR_EWIF	(1 << 1) /* Error Warning Detect Flag */
-#define RCAR_CAN_EIFR_BEIF	(1 << 0) /* Bus Error Detect Flag */
+#define RCAR_CAN_EIFR_BLIF      (1 << 7)        /* Bus Lock Detect Flag */
+#define RCAR_CAN_EIFR_OLIF      (1 << 6)        /* Overload Frame Transmission */
+                                                /* Detect Flag */
+#define RCAR_CAN_EIFR_ORIF      (1 << 5)        /* Receive Overrun Detect Flag */
+#define RCAR_CAN_EIFR_BORIF     (1 << 4)        /* Bus-Off Recovery Detect Flag */
+#define RCAR_CAN_EIFR_BOEIF     (1 << 3)        /* Bus-Off Entry Detect Flag */
+#define RCAR_CAN_EIFR_EPIF      (1 << 2)        /* Error Passive Detect Flag */
+#define RCAR_CAN_EIFR_EWIF      (1 << 1)        /* Error Warning Detect Flag */
+#define RCAR_CAN_EIFR_BEIF      (1 << 0)        /* Bus Error Detect Flag */
 
-#define RCAR_CAN_RECR           0x084D   /* Receive Error Count Register */
+/* Receive Error Count Register */
+#define RCAR_CAN_RECR           0x084D
 #define RCAR_CAN_TECR           0x084F   /* Transmit Error Count Register*/
 
 /* Mailbox configuration:
@@ -181,31 +199,33 @@ struct can_rcar_data {
  * mailbox 56 - 59 - Tx FIFO mailboxes
  * non-FIFO mailboxes are not used
  */
-#define RCAR_CAN_N_MBX		64 /* Number of mailboxes in non-FIFO mode */
-#define RCAR_CAN_RX_FIFO_MBX	60 /* Mailbox - window to Rx FIFO */
-#define RCAR_CAN_TX_FIFO_MBX	56 /* Mailbox - window to Tx FIFO */
-#define	RCAR_CAN_MB_56		0x0380	/* Mailbox Register 56 */
-#define	RCAR_CAN_MB_60		0x03C0	/* Mailbox Register 60 */
+#define RCAR_CAN_N_MBX          64      /* Number of mailboxes in non-FIFO mode */
+#define RCAR_CAN_RX_FIFO_MBX    60      /* Mailbox - window to Rx FIFO */
+#define RCAR_CAN_TX_FIFO_MBX    56      /* Mailbox - window to Tx FIFO */
+/* Mailbox Register 56 */
+#define RCAR_CAN_MB_56          0x0380
+/* Mailbox Register 60 */
+#define RCAR_CAN_MB_60          0x03C0
 /* DLC must be accessed as a 16 bit register */
-#define	RCAR_CAN_MB_DLC_OFFSET	0x4	/* Mailbox offset to data length code */
-#define	RCAR_CAN_MB_DATA_OFFSET	0x6	/* Mailbox offset to data section up to 8 bytes*/
-#define	RCAR_CAN_MB_TSH_OFFSET	0x14	/* Mailbox offset to timestamp upper byte */
-#define	RCAR_CAN_MB_TSL_OFFSET	0x14	/* Mailbox offset to timestamp lower byte */
-#define RCAR_CAN_FIFO_DEPTH	4
+#define RCAR_CAN_MB_DLC_OFFSET  0x4     /* Data length code */
+#define RCAR_CAN_MB_DATA_OFFSET 0x6     /* Data section */
+#define RCAR_CAN_MB_TSH_OFFSET  0x14    /* Timestamp upper byte */
+#define RCAR_CAN_MB_TSL_OFFSET  0x15    /* Timestamp lower byte */
+#define RCAR_CAN_FIFO_DEPTH     4
 #define RCAR_CAN_MB_SID_SHIFT   18
 #define RCAR_CAN_MB_RTR         (1 << 30)
 #define RCAR_CAN_MB_IDE         (1 << 31)
 #define RCAR_CAN_MB_SID_MASK    0x1FFC0000
 #define RCAR_CAN_MB_EID_MASK    0x1FFFFFFF
 
-
-static inline uint16_t can_rcar_read16(const struct can_rcar_cfg *config, uint32_t offs)
+static inline uint16_t can_rcar_read16(const struct can_rcar_cfg *config,
+				       uint32_t offs)
 {
 	return sys_read16(config->reg_addr + offs);
 }
 
-static inline void can_rcar_write16(const struct can_rcar_cfg *config, uint32_t offs,
-				   uint16_t value)
+static inline void can_rcar_write16(const struct can_rcar_cfg *config,
+				    uint32_t offs, uint16_t value)
 {
 	sys_write16(value, config->reg_addr + offs);
 }
@@ -235,8 +255,9 @@ static void can_rcar_state_change(const struct device *dev, uint32_t newstate)
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
 	struct can_bus_err_cnt err_cnt;
 
-	if (!data->state_change_isr)
+	if (!data->state_change_isr) {
 		return;
+	}
 
 	if (data->state == newstate) {
 		return;
@@ -260,69 +281,81 @@ static void can_rcar_error(const struct device *dev)
 		ecsr = sys_read8(config->reg_addr + RCAR_CAN_ECSR);
 		if (ecsr & RCAR_CAN_ECSR_ADEF) {
 			LOG_ERR("ACK Delimiter Error\n");
-			sys_write8(~RCAR_CAN_ECSR_ADEF, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_ADEF,
+				   config->reg_addr + RCAR_CAN_ECSR);
 			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_BE0F) {
 			LOG_ERR("Bit Error (dominant)\n");
-			sys_write8(~RCAR_CAN_ECSR_BE0F, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_BE0F,
+				   config->reg_addr + RCAR_CAN_ECSR);
 			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_BE1F) {
 			LOG_ERR("Bit Error (recessive)\n");
-			sys_write8(~RCAR_CAN_ECSR_BE1F, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_BE1F,
+				   config->reg_addr + RCAR_CAN_ECSR);
 			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_CEF) {
 			LOG_ERR("CRC Error\n");
-			sys_write8(~RCAR_CAN_ECSR_CEF, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_CEF,
+				   config->reg_addr + RCAR_CAN_ECSR);
 		}
 		if (ecsr & RCAR_CAN_ECSR_AEF) {
 			LOG_ERR("ACK Error\n");
-			sys_write8(~RCAR_CAN_ECSR_AEF, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_AEF,
+				   config->reg_addr + RCAR_CAN_ECSR);
 			txerr = CAN_TX_ERR;
 		}
 		if (ecsr & RCAR_CAN_ECSR_FEF) {
 			LOG_ERR("Form Error\n");
-			sys_write8(~RCAR_CAN_ECSR_FEF, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_FEF,
+				   config->reg_addr + RCAR_CAN_ECSR);
 		}
 		if (ecsr & RCAR_CAN_ECSR_SEF) {
 			LOG_ERR("Stuff Error\n");
-			sys_write8(~RCAR_CAN_ECSR_SEF, config->reg_addr + RCAR_CAN_ECSR);
+			sys_write8(~RCAR_CAN_ECSR_SEF,
+				   config->reg_addr + RCAR_CAN_ECSR);
 		}
 
-		sys_write8(~RCAR_CAN_EIFR_BEIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8(~RCAR_CAN_EIFR_BEIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
 	}
 	if (eifr & RCAR_CAN_EIFR_EWIF) {
 		LOG_ERR("Error warning interrupt\n");
 		/* Clear interrupt condition */
-		sys_write8(~RCAR_CAN_EIFR_EWIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8(~RCAR_CAN_EIFR_EWIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
 	}
 	if (eifr & RCAR_CAN_EIFR_EPIF) {
 		LOG_ERR("Error passive interrupt\n");
 		/* Clear interrupt condition */
-		sys_write8(~RCAR_CAN_EIFR_EPIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8(~RCAR_CAN_EIFR_EPIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
 		can_rcar_state_change(dev, CAN_ERROR_PASSIVE);
 	}
 	if (eifr & RCAR_CAN_EIFR_BOEIF) {
 		LOG_ERR("Bus-off entry interrupt\n");
-		/* FIXME: if there is an in flight message there return an error */
 		sys_write8(RCAR_CAN_IER_ERSIE, config->reg_addr + RCAR_CAN_IER);
 		/* Clear interrupt condition */
-		sys_write8(~RCAR_CAN_EIFR_BOEIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8(~RCAR_CAN_EIFR_BOEIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
 		can_rcar_state_change(dev, CAN_BUS_OFF);
 	}
 	if (eifr & RCAR_CAN_EIFR_ORIF) {
 		LOG_ERR("Receive overrun error interrupt\n");
-		sys_write8(~RCAR_CAN_EIFR_ORIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8(~RCAR_CAN_EIFR_ORIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
 	}
 	if (eifr & RCAR_CAN_EIFR_OLIF) {
 		LOG_ERR("Overload Frame Transmission error interrupt\n");
-		sys_write8(~RCAR_CAN_EIFR_OLIF, config->reg_addr + RCAR_CAN_EIFR);
+		sys_write8(~RCAR_CAN_EIFR_OLIF,
+			   config->reg_addr + RCAR_CAN_EIFR);
 	}
 	if (eifr & RCAR_CAN_EIFR_BLIF) {
 		LOG_ERR("Bus lock detected interrupt\n");
-		sys_write8((uint8_t)~RCAR_CAN_EIFR_BLIF,
+		sys_write8((uint8_t) ~RCAR_CAN_EIFR_BLIF,
 			   config->reg_addr + RCAR_CAN_EIFR);
 	}
 
@@ -332,21 +365,24 @@ static void can_rcar_error(const struct device *dev)
 }
 
 static void can_rcar_rx_filter(struct can_rcar_data *data,
-			      const struct zcan_frame *msg)
+			       const struct zcan_frame *msg)
 {
 	struct zcan_frame tmp_msg;
 	uint8_t i;
 
 	k_mutex_lock(&data->rx_mutex, K_FOREVER);
 	for (i = 0; i < CONFIG_CAN_RCAR_MAX_FILTER; i++) {
-		if (data->rx_callback[i] == NULL)
+		if (data->rx_callback[i] == NULL) {
 			continue;
+		}
 
 		if (!can_utils_filter_match(msg,
-					  &data->filter[i])) {
+					    &data->filter[i])) {
 			continue; /* filter did not match */
 		}
-		/* Make a temporary copy in case the user modifies the message */
+		/* Make a temporary copy in case the user
+		 * modifies the message.
+		 */
 		tmp_msg = *msg;
 		data->rx_callback[i](&tmp_msg, data->rx_callback_arg[i]);
 	}
@@ -370,25 +406,25 @@ static void can_rcar_rx_handler(const struct device *dev)
 		msg.id = (val & RCAR_CAN_MB_SID_MASK) >> RCAR_CAN_MB_SID_SHIFT;
 	}
 
-	if (val & RCAR_CAN_MB_RTR)
-	{
+	if (val & RCAR_CAN_MB_RTR) {
 		msg.rtr = CAN_REMOTEREQUEST;
 	} else {
 		msg.rtr = CAN_DATAFRAME;
 	}
 
 	msg.dlc = sys_read16(config->reg_addr
-			    + RCAR_CAN_MB_60 + RCAR_CAN_MB_DLC_OFFSET) & 0xF;
+			     + RCAR_CAN_MB_60 + RCAR_CAN_MB_DLC_OFFSET) & 0xF;
 
 	/* Be paranoid doc states that any value greater than 8
 	 * should be considered as 8 bytes.
 	 */
-	if (msg.dlc > CAN_MAX_DLC)
+	if (msg.dlc > CAN_MAX_DLC) {
 		msg.dlc = CAN_MAX_DLC;
+	}
 
 	for (i = 0; i < msg.dlc; i++)
 		msg.data[i] = sys_read8(config->reg_addr
-			   + RCAR_CAN_MB_60 + RCAR_CAN_MB_DATA_OFFSET + i);
+				+ RCAR_CAN_MB_60 + RCAR_CAN_MB_DATA_OFFSET + i);
 #if defined(CONFIG_CAN_RX_TIMESTAMP)
 	/* read upper byte */
 	msg.timestamp = sys_read8(config->reg_addr +
@@ -422,7 +458,6 @@ static void can_rcar_isr(const struct device *dev)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
-
 	uint8_t isr;
 
 	isr = sys_read8(config->reg_addr + RCAR_CAN_ISR);
@@ -457,8 +492,9 @@ static int can_rcar_leave_sleep_mode(const struct can_rcar_cfg *config)
 	can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
 	for (i = 0; i < MAX_STR_READS; i++) {
 		str = can_rcar_read16(config, RCAR_CAN_STR);
-		if (!(str & RCAR_CAN_STR_SLPST))
+		if (!(str & RCAR_CAN_STR_SLPST)) {
 			return 0;
+		}
 	}
 	return -ETIME;
 }
@@ -471,12 +507,14 @@ static int can_rcar_enter_reset_mode(const struct can_rcar_cfg *config, bool for
 	ctlr = can_rcar_read16(config, RCAR_CAN_CTLR);
 	ctlr &= ~RCAR_CAN_CTLR_CANM_MASK;
 	ctlr |= RCAR_CAN_CTLR_CANM_RESET;
-	if (force)
+	if (force) {
 		ctlr |= RCAR_CAN_CTLR_CANM_HALT;
+	}
 	can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
 	for (i = 0; i < MAX_STR_READS; i++) {
-		if (can_rcar_read16(config, RCAR_CAN_STR) & RCAR_CAN_STR_RSTST)
+		if (can_rcar_read16(config, RCAR_CAN_STR) & RCAR_CAN_STR_RSTST) {
 			return 0;
+		}
 	}
 	return -ETIME;
 }
@@ -491,8 +529,9 @@ static int can_rcar_enter_halt_mode(const struct can_rcar_cfg *config)
 	ctlr |= RCAR_CAN_CTLR_CANM_HALT;
 	can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
 	for (i = 0; i < MAX_STR_READS; i++) {
-		if (can_rcar_read16(config, RCAR_CAN_STR) & RCAR_CAN_STR_HLTST)
+		if (can_rcar_read16(config, RCAR_CAN_STR) & RCAR_CAN_STR_HLTST) {
 			return 0;
+		}
 	}
 
 	return -ETIME;
@@ -509,12 +548,14 @@ static int can_rcar_enter_operation_mode(const struct can_rcar_cfg *config)
 
 	for (i = 0; i < MAX_STR_READS; i++) {
 		str = can_rcar_read16(config, RCAR_CAN_STR);
-		if (!(str & RCAR_CAN_CTLR_CANM_MASK))
+		if (!(str & RCAR_CAN_CTLR_CANM_MASK)) {
 			break;
+		}
 	}
 
-	if (i == MAX_STR_READS)
+	if (i == MAX_STR_READS) {
 		return -ETIME;
+	}
 
 	/* Enable Rx and Tx FIFO */
 	sys_write8(RCAR_CAN_RFCR_RFE, config->reg_addr + RCAR_CAN_RFCR);
@@ -551,8 +592,9 @@ int can_rcar_set_mode(const struct device *dev, enum can_mode mode)
 
 	/* Writting to TCR registers must be done in halt mode */
 	ret = can_rcar_enter_halt_mode(config);
-	if (ret)
+	if (ret) {
 		goto unlock;
+	}
 
 	sys_write8(tcr, config->reg_addr + RCAR_CAN_TCR);
 	/* Go back to operation mode */
@@ -565,10 +607,10 @@ unlock:
 }
 
 /* Bit Configuration Register settings */
-#define RCAR_CAN_BCR_TSEG1(x)	(((x) & 0x0f) << 20)
-#define RCAR_CAN_BCR_BPR(x)	(((x) & 0x3ff) << 8)
-#define RCAR_CAN_BCR_SJW(x)	(((x) & 0x3) << 4)
-#define RCAR_CAN_BCR_TSEG2(x)	((x) & 0x07)
+#define RCAR_CAN_BCR_TSEG1(x)   (((x) & 0x0f) << 20)
+#define RCAR_CAN_BCR_BPR(x)     (((x) & 0x3ff) << 8)
+#define RCAR_CAN_BCR_SJW(x)     (((x) & 0x3) << 4)
+#define RCAR_CAN_BCR_TSEG2(x)   ((x) & 0x07)
 
 static void can_rcar_set_bittiming(const struct can_rcar_cfg *config,
 				   const struct can_timing *timing)
@@ -584,12 +626,13 @@ static void can_rcar_set_bittiming(const struct can_rcar_cfg *config,
 	 * All the registers are big-endian but they get byte-swapped on 32-bit
 	 * read/write (but not on 8-bit, contrary to the manuals)...
 	 */
-	sys_write32((bcr << 8) | RCAR_CAN_CLKR_CLKP2, config->reg_addr + RCAR_CAN_BCR);
+	sys_write32((bcr << 8) | RCAR_CAN_CLKR_CLKP2,
+		    config->reg_addr + RCAR_CAN_BCR);
 }
 
 int can_rcar_set_timing(const struct device *dev,
-			 const struct can_timing *timing,
-			 const struct can_timing *timing_data)
+			const struct can_timing *timing,
+			const struct can_timing *timing_data)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
@@ -601,8 +644,9 @@ int can_rcar_set_timing(const struct device *dev,
 
 	/* Changing bittiming should be done in reset mode */
 	ret = can_rcar_enter_reset_mode(config, true);
-	if (ret != 0)
+	if (ret != 0) {
 		goto unlock;
+	}
 
 	can_rcar_set_bittiming(config, timing);
 
@@ -615,7 +659,7 @@ unlock:
 }
 
 static void can_rcar_register_state_change_isr(const struct device *dev,
-						can_state_change_isr_t isr)
+					       can_state_change_isr_t isr)
 {
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
 
@@ -623,7 +667,7 @@ static void can_rcar_register_state_change_isr(const struct device *dev,
 }
 
 static enum can_state can_rcar_get_state(const struct device *dev,
-					  struct can_bus_err_cnt *err_cnt)
+					 struct can_bus_err_cnt *err_cnt)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
@@ -642,8 +686,8 @@ int can_rcar_recover(const struct device *dev, k_timeout_t timeout)
 #endif /* CONFIG_CAN_AUTO_BUS_OFF_RECOVERY */
 
 int can_rcar_send(const struct device *dev, const struct zcan_frame *msg,
-		   k_timeout_t timeout, can_tx_callback_t callback,
-		   void *callback_arg)
+		  k_timeout_t timeout, can_tx_callback_t callback,
+		  void *callback_arg)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
@@ -651,20 +695,21 @@ int can_rcar_send(const struct device *dev, const struct zcan_frame *msg,
 	int i;
 
 	LOG_DBG("Sending %d bytes on %s. "
-		    "Id: 0x%x, "
-		    "ID type: %s, "
-		    "Remote Frame: %s"
-		    , msg->dlc, dev->name
-		    , msg->id
-		    , msg->id_type == CAN_STANDARD_IDENTIFIER ?
-		    "standard" : "extended"
-		    , msg->rtr == CAN_DATAFRAME ? "no" : "yes");
+		"Id: 0x%x, "
+		"ID type: %s, "
+		"Remote Frame: %s"
+		, msg->dlc, dev->name
+		, msg->id
+		, msg->id_type == CAN_STANDARD_IDENTIFIER ?
+		"standard" : "extended"
+		, msg->rtr == CAN_DATAFRAME ? "no" : "yes");
 
 
 	__ASSERT(msg->dlc == 0U || msg->data != NULL, "Dataptr is null");
 
 	if (msg->dlc > CAN_MAX_DLC) {
-		LOG_ERR("DLC of %d exceeds maximum (%d)", msg->dlc, CAN_MAX_DLC);
+		LOG_ERR("DLC of %d exceeds maximum (%d)",
+			msg->dlc, CAN_MAX_DLC);
 		return CAN_TX_EINVAL;
 	}
 
@@ -686,7 +731,7 @@ int can_rcar_send(const struct device *dev, const struct zcan_frame *msg,
 	sys_write32(identifier, config->reg_addr + RCAR_CAN_MB_56);
 
 	sys_write16(msg->dlc, config->reg_addr
-			   + RCAR_CAN_MB_56 + RCAR_CAN_MB_DLC_OFFSET);
+		    + RCAR_CAN_MB_56 + RCAR_CAN_MB_DLC_OFFSET);
 
 	for (i = 0; i < msg->dlc; i++)
 		sys_write8(msg->data[i], config->reg_addr
@@ -708,12 +753,13 @@ int can_rcar_send(const struct device *dev, const struct zcan_frame *msg,
 }
 
 static inline int can_rcar_attach(const struct device *dev,
-				   can_rx_callback_t cb,
-				   void *cb_arg,
-				   const struct zcan_filter *filter)
+				  can_rx_callback_t cb,
+				  void *cb_arg,
+				  const struct zcan_filter *filter)
 {
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
 	int i;
+
 	for (i = 0; i < CONFIG_CAN_RCAR_MAX_FILTER; i++)
 		if (data->rx_callback[i] == NULL) {
 			data->rx_callback[i] = cb;
@@ -725,8 +771,8 @@ static inline int can_rcar_attach(const struct device *dev,
 }
 
 int can_rcar_attach_isr(const struct device *dev, can_rx_callback_t isr,
-			 void *cb_arg,
-			 const struct zcan_filter *filter)
+			void *cb_arg,
+			const struct zcan_filter *filter)
 {
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
 	int filter_nr;
@@ -740,8 +786,10 @@ int can_rcar_attach_isr(const struct device *dev, can_rx_callback_t isr,
 void can_rcar_detach(const struct device *dev, int filter_nr)
 {
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
-	if (filter_nr >= CONFIG_CAN_RCAR_MAX_FILTER)
+
+	if (filter_nr >= CONFIG_CAN_RCAR_MAX_FILTER) {
 		return;
+	}
 
 	k_mutex_lock(&data->rx_mutex, K_FOREVER);
 	data->rx_callback[filter_nr] = NULL;
@@ -794,13 +842,15 @@ static int can_rcar_init(const struct device *dev)
 
 	ret = can_rcar_enter_reset_mode(config, false);
 	__ASSERT(!ret, "Fail to set CAN controller to reset mode");
-	if (ret)
+	if (ret) {
 		return ret;
+	}
 
 	ret = can_rcar_leave_sleep_mode(config);
 	__ASSERT(!ret, "Fail to leave CAN controller from sleep mode");
-	if (ret)
+	if (ret) {
 		return ret;
+	}
 
 	timing.sjw = config->sjw;
 	if (config->sample_point) {
@@ -835,11 +885,11 @@ static int can_rcar_init(const struct device *dev)
 
 	ctlr = can_rcar_read16(config, RCAR_CAN_CTLR);
 	ctlr |= RCAR_CAN_CTLR_IDFM_MIXED; /* Select mixed ID mode */
-	ctlr |= RCAR_CAN_CTLR_BOM_ENT;	/* Entry to halt mode automatically */
-					/* at bus-off */
-	ctlr |= RCAR_CAN_CTLR_MBM;	/* Select FIFO mailbox mode */
-	ctlr |= RCAR_CAN_CTLR_MLM;	/* Overrun mode */
-	ctlr &= ~RCAR_CAN_CTLR_SLPM; /* Clear CAN Sleep mode */
+	ctlr |= RCAR_CAN_CTLR_BOM_ENT;	  /* Entry to halt mode automatically */
+					  /* at bus-off */
+	ctlr |= RCAR_CAN_CTLR_MBM;	  /* Select FIFO mailbox mode */
+	ctlr |= RCAR_CAN_CTLR_MLM;	  /* Overrun mode */
+	ctlr &= ~RCAR_CAN_CTLR_SLPM;	  /* Clear CAN Sleep mode */
 	can_rcar_write16(config, RCAR_CAN_CTLR, ctlr);
 
 	/* Accept all SID and EID */
@@ -857,10 +907,10 @@ static int can_rcar_init(const struct device *dev)
 
 	/* Enable and configure FIFO mailbox interrupts Rx and Tx */
 	sys_write32(RCAR_CAN_MIER1_RXFIE | RCAR_CAN_MIER1_TXFIE,
-			config->reg_addr + RCAR_CAN_MIER1);
+		    config->reg_addr + RCAR_CAN_MIER1);
 
 	sys_write8(RCAR_CAN_IER_ERSIE | RCAR_CAN_IER_RXFIE | RCAR_CAN_IER_TXFIE,
-			config->reg_addr + RCAR_CAN_IER);
+		   config->reg_addr + RCAR_CAN_IER);
 
 	/* Accumulate error codes */
 	sys_write8(RCAR_CAN_ECSR_EDPM, config->reg_addr + RCAR_CAN_ECSR);
@@ -878,8 +928,9 @@ static int can_rcar_init(const struct device *dev)
 	/* Go to operation mode */
 	ret = can_rcar_enter_operation_mode(config);
 	__ASSERT(!ret, "Fail to set CAN controller to operation mode");
-	if (ret)
+	if (ret) {
 		return ret;
+	}
 
 	config->init_func(dev);
 	return 0;
@@ -922,49 +973,49 @@ static const struct can_driver_api can_rcar_driver_api = {
 };
 
 /* Device Instantiation */
-#define CAN_RCAR_INIT(n) \
-	static void can_rcar_##n##_init(const struct device *dev);	\
-	static const struct can_rcar_cfg can_rcar_cfg_##n = {         \
-		.reg_addr = DT_INST_REG_ADDR(n), \
-		.reg_size = DT_INST_REG_SIZE(n), \
-		.init_func = can_rcar_##n##_init, \
-		.clock_controller = DT_INST_CLOCKS_LABEL(n), \
-		.mod_clk.module = \
-		DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module), \
-		.mod_clk.domain = \
-		DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain), \
-		.bus_clk.module = \
-		DT_INST_CLOCKS_CELL_BY_IDX(n, 1, module), \
-		.bus_clk.domain = \
-		DT_INST_CLOCKS_CELL_BY_IDX(n, 1, domain), \
-		.bus_clk.rate = 40000000,		  \
-		.bus_speed = DT_INST_PROP(n, bus_speed), \
-		.sjw = DT_INST_PROP(n, sjw), \
-		.prop_seg = DT_INST_PROP_OR(n, prop_seg, 0), \
-		.phase_seg1 = DT_INST_PROP_OR(n, phase_seg1, 0), \
-		.phase_seg2 = DT_INST_PROP_OR(n, phase_seg2, 0), \
-		.sample_point = DT_INST_PROP_OR(n, sample_point, 0),	\
-		.int_thread_stack_size = CONFIG_CAN_RCAR_INT_THREAD_STACK_SIZE, \
-		.int_thread_priority = CONFIG_CAN_RCAR_INT_THREAD_PRIO, \
-	};					       \
-	static struct can_rcar_data can_rcar_data_##n; \
-\
-	DEVICE_DT_INST_DEFINE(n, can_rcar_init,\
-			    device_pm_control_nop,	\
-			    &can_rcar_data_##n, \
-			    &can_rcar_cfg_##n, \
-			    POST_KERNEL, \
-			    CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, \
-			    &can_rcar_driver_api \
-			   ); \
-	static void can_rcar_##n##_init(const struct device *dev)	\
-	{								\
-		IRQ_CONNECT(DT_INST_IRQN(n),				\
-			    0,						\
-			    can_rcar_isr,				\
-			    DEVICE_DT_INST_GET(n), 0);			\
-									\
-		irq_enable(DT_INST_IRQN(n));				\
+#define CAN_RCAR_INIT(n)							\
+	static void can_rcar_##n##_init(const struct device *dev);		\
+	static const struct can_rcar_cfg can_rcar_cfg_##n = {			\
+		.reg_addr = DT_INST_REG_ADDR(n),				\
+		.reg_size = DT_INST_REG_SIZE(n),				\
+		.init_func = can_rcar_##n##_init,				\
+		.clock_controller = DT_INST_CLOCKS_LABEL(n),			\
+		.mod_clk.module =						\
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),		\
+		.mod_clk.domain =						\
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain),		\
+		.bus_clk.module =						\
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, module),		\
+		.bus_clk.domain =						\
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, domain),		\
+		.bus_clk.rate = 40000000,					\
+		.bus_speed = DT_INST_PROP(n, bus_speed),			\
+		.sjw = DT_INST_PROP(n, sjw),					\
+		.prop_seg = DT_INST_PROP_OR(n, prop_seg, 0),			\
+		.phase_seg1 = DT_INST_PROP_OR(n, phase_seg1, 0),		\
+		.phase_seg2 = DT_INST_PROP_OR(n, phase_seg2, 0),		\
+		.sample_point = DT_INST_PROP_OR(n, sample_point, 0),		\
+		.int_thread_stack_size = CONFIG_CAN_RCAR_INT_THREAD_STACK_SIZE,	\
+		.int_thread_priority = CONFIG_CAN_RCAR_INT_THREAD_PRIO,		\
+	};									\
+	static struct can_rcar_data can_rcar_data_##n;				\
+										\
+	DEVICE_DT_INST_DEFINE(n, can_rcar_init,					\
+			      device_pm_control_nop,				\
+			      &can_rcar_data_##n,				\
+			      &can_rcar_cfg_##n,				\
+			      POST_KERNEL,					\
+			      CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,		\
+			      &can_rcar_driver_api				\
+			      );						\
+	static void can_rcar_##n##_init(const struct device *dev)		\
+	{									\
+		IRQ_CONNECT(DT_INST_IRQN(n),					\
+			    0,							\
+			    can_rcar_isr,					\
+			    DEVICE_DT_INST_GET(n), 0);				\
+										\
+		irq_enable(DT_INST_IRQN(n));					\
 	}
 
 
