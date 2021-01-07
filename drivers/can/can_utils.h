@@ -22,14 +22,9 @@ static inline uint8_t can_utils_filter_match(const struct zcan_frame *msg,
 		return 0;
 	}
 
-	if (msg->id_type == CAN_STANDARD_IDENTIFIER) {
-		if ((msg->std_id ^ filter->std_id) & filter->std_id_mask) {
-			return 0;
-		}
-	} else {
-		if ((msg->ext_id ^ filter->ext_id) & filter->ext_id_mask) {
-			return 0;
-		}
+
+	if ((msg->id ^ filter->id) & filter->id_mask) {
+		return 0;
 	}
 
 	return 1;
