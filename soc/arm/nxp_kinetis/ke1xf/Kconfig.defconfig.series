@@ -44,6 +44,9 @@ config COUNTER_MCUX_RTC
 config COUNTER_MCUX_LPTMR
 	default y
 
+config COUNTER_MCUX_LPIT
+	default y
+
 endif # COUNTER
 
 config PWM_MCUX_FTM
