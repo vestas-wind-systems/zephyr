@@ -131,6 +131,17 @@
 			label = "RTC_0";
 		};
 
+		lpit: lpit@40037000 {
+			compatible = "nxp,kinetis-lpit";
+			reg = <0x40037000 0x1000>;
+			interrupts = <48 0>, <49 0>, <50 0>, <51 0>;
+			clocks = <&pcc 0x0dc KINETIS_PCC_SRC_FIRC_ASYNC>;
+			label = "LPIT_0";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
 		dac0: dac@4003f000 {
 			compatible = "nxp,kinetis-dac32";
 			reg = <0x4003f000 0x1000>;
