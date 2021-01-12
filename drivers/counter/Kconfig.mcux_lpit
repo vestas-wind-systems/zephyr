@@ -1,0 +1,10 @@
+# MCUXpresso SDK Low-power Periodic Interval Timer (LPIT)
+
+# Copyright (c) 2021 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+config COUNTER_MCUX_LPIT
+	bool "MCUX LPIT driver"
+	depends on HAS_MCUX_LPIT
+	help
+	  Enable support for the MCUX Low-power Periodic Interrupt Timer (LPIT).
