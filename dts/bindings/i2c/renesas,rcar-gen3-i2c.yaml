@@ -1,0 +1,12 @@
+# Copyright (c) 2021, IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+description: Renesas R-Car Gen3 I2C controller
+
+compatible: "resesas,rcar-gen3-i2c"
+
+include: i2c-controller.yaml
+
+properties:
+    reg:
+      required: true
