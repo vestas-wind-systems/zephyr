@@ -7,12 +7,8 @@
 #define DT_DRV_COMPAT renesas_rcar_gen3_scif
 
 #include <errno.h>
-
-#include <kernel.h>
 #include <device.h>
 #include <devicetree.h>
-#include <init.h>
-#include <soc.h>
 #include <drivers/uart.h>
 #include <drivers/clock_control.h>
 #include <drivers/clock_control/rcar_clock_control.h>
@@ -103,19 +99,19 @@ struct uart_rcar_data {
 	((struct uart_rcar_data *)(dev)->data)
 
 static void uart_rcar_write_8(const struct uart_rcar_cfg *config,
-			      uint32_t offs, uint32_t value)
+			      uint32_t offs, uint8_t value)
 {
 	sys_write8(value, config->reg_addr + offs);
 }
 
-static uint32_t uart_rcar_read_16(const struct uart_rcar_cfg *config,
+static uint16_t uart_rcar_read_16(const struct uart_rcar_cfg *config,
 				  uint32_t offs)
 {
 	return sys_read16(config->reg_addr + offs);
 }
 
 static void uart_rcar_write_16(const struct uart_rcar_cfg *config,
-			       uint32_t offs, uint32_t value)
+			       uint32_t offs, uint16_t value)
 {
 	sys_write16(value, config->reg_addr + offs);
 }
