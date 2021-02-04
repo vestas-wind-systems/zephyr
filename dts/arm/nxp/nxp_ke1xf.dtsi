@@ -163,6 +163,15 @@
 			label = "WDT_0";
 		};
 
+		ewm: watchdog@40061000 {
+			compatible = "nxp,kinetis-ewm";
+			reg = <0x40061000 0x1000>;
+			interrupts = <22 0>;
+			clocks = <&lpo>;
+			clk-divider = <256>;
+			label = "EWM";
+		};
+
 		pwt: pwt@40056000 {
 			compatible = "nxp,kinetis-pwt";
 			reg = <0x40056000 0x1000>;
