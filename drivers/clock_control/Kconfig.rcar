@@ -1,0 +1,10 @@
+# Renesas RCar Gen3
+
+# Copyright (c) 2020 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config CLOCK_CONTROL_RCAR_MSSR
+	bool "RCar MSSR driver"
+	depends on SOC_RENESAS_RCAR_CR7
+	help
+	  Enable support for Renesas RCar MSSR driver.
