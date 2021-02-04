@@ -39,6 +39,19 @@
 		};
 	};
 
+	display {
+		compatible = "renesas,rcar-display";
+		label = "DISPLAY";
+		display_path = < 0 >;
+		status = "okay";
+	};
+
+	vspd {
+		compatible = "renesas,rcar_vspd";
+		label = "rcar-vspd";
+		status = "okay";
+	};
+
 	aliases {
 		led0 = &user_led;
 		sw0  = &user_button;

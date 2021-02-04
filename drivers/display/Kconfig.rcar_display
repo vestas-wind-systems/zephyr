@@ -1,0 +1,9 @@
+# RCAR display controller configuration options
+
+# Copyright (c) 2020 IoT.BzH
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig RCAR_DISPLAY
+	bool "RCAR display driver"
+	help
+	  Enable driver for RCAR display.

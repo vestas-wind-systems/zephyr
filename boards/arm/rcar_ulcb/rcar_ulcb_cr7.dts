@@ -39,6 +39,16 @@
 		};
 	};
 
+	display {
+		compatible = "rcar_display";
+		label = "DISPLAY";
+	};
+
+	vspd {
+		compatible = "rcar_vspd";
+		label = "rcar-vspd";
+	};
+
 	aliases {
 		led0 = &user_led;
 		sw0 = &user_button;

@@ -21,3 +21,5 @@ zephyr_sources_ifdef(CONFIG_MICROBIT_DISPLAY
 	mb_display.c
 	mb_font.c
 )
+
+zephyr_sources_ifdef(CONFIG_RCAR_DISPLAY rcar_display.c rcar_du.c rcar_vspd.c)
