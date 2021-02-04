@@ -1,0 +1,36 @@
+# Copyright (c) 2020 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+description: Kinetis External Watchdog Monitor (EWM)
+
+compatible: "nxp,kinetis-ewm"
+
+include: base.yaml
+
+properties:
+    reg:
+      required: true
+
+    label:
+      required: true
+
+    interrupts:
+      required: true
+
+    clocks:
+      required: true
+
+    clk-source:
+      type: int
+      required: false
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+      description: Watchdog counter clock source
+
+    clk-divider:
+      type: int
+      required: false
+      description: Watchdog counter clock divider
