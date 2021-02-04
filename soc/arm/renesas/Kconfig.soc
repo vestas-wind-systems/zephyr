@@ -4,6 +4,6 @@
 config SOC_RENESAS_RCAR_CR7
 	bool "Renesas RCAR Cortex R7"
 	select ARM
-	select CPU_CORTEX_R5
+	select CPU_CORTEX_R7
 	select GIC_V2
 	select CPU_HAS_DCLS
