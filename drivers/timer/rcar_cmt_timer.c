@@ -95,7 +95,6 @@ int z_clock_driver_init(const struct device *device)
 	/* Set the timer as 32-bit, with RCLK/1 clock */
 	reg_val = CSR_FREE_RUN;
 	reg_val |= CSR_ENABLE_INTERRUPT;
-	reg_val |= CSR_ENABLE_COUNTER_IN_DEBUG;
 	reg_val |= CSR_CLK_DIV_1;
 	sys_write32(reg_val, TIMER_BASE_ADDR + CMCSR0_OFFSET);
 
