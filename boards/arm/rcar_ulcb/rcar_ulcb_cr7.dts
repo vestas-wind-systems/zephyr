@@ -18,6 +18,7 @@
 		zephyr,ipc = &mfis;
 		zephyr,can-primary = &can0;
 		zephyr,console = &scif1;
+		zephyr,shell-uart = &scif1;
 	};
 
 	sram_shm: memory@42000000 {
