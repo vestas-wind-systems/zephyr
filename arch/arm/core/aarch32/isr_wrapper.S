@@ -171,7 +171,7 @@ _idle_state_cleared:
 #error Unknown ARM architecture
 #endif /* CONFIG_CPU_CORTEX_M */
 
-#if !defined(CONFIG_CPU_CORTEX_M) && !defined(CONFIG_CPU_CORTEX_R)
+#if !defined(CONFIG_CPU_CORTEX_M)
 	/*
 	 * Enable interrupts to allow nesting.
 	 *
