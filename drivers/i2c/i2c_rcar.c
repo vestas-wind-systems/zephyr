@@ -86,7 +86,7 @@ static void i2c_rcar_write(const struct i2c_rcar_cfg *config,
 	sys_write32(value, config->reg_addr + offs);
 }
 
-static int rcar_i2c_finish(const struct device *dev)
+static int i2c_rcar_finish(const struct device *dev)
 {
 	const struct i2c_rcar_cfg *config = DEV_I2C_CFG(dev);
 	uint16_t timeout = 0;
@@ -151,51 +151,6 @@ static int i2c_rcar_set_addr(const struct device *dev,
 	return 0;
 }
 
-static int i2c_rcar_configure(const struct device *dev, uint32_t dev_config)
-{
-	const struct i2c_rcar_cfg *config = DEV_I2C_CFG(dev);
-	uint8_t cdf, scgd;
-
-	if (!(I2C_MODE_MASTER & dev_config)) {
-		return -EINVAL;
-	}
-
-	if (I2C_ADDR_10_BITS & dev_config) {
-		return -EINVAL;
-	}
-
-	switch (I2C_SPEED_GET(dev_config)) {
-	case I2C_SPEED_STANDARD:
-		/* Setting ICCCR to recommended value for 100 kHz bus */
-		cdf = RCAR_I2C_ICCCR_CDF_100_KHZ;
-		scgd = RCAR_I2C_ICCCR_SCGD_100_KHZ;
-		break;
-	case I2C_SPEED_FAST:
-		/* Setting ICCCR to recommended value for 400 kHz bus */
-		cdf = RCAR_I2C_ICCCR_CDF_400_KHZ;
-		scgd = RCAR_I2C_ICCCR_SCGD_400_KHZ;
-		break;
-	default:
-		return -EINVAL;
-	}
-
-	i2c_rcar_write(config, RCAR_I2C_ICCCR, (scgd << RCAR_I2C_ICCCR_SCGD_OFF) | cdf);
-
-	/* reset slave mode */
-	i2c_rcar_write(config, RCAR_I2C_ICSIER, 0);
-	i2c_rcar_write(config, RCAR_I2C_ICSAR, 0);
-	i2c_rcar_write(config, RCAR_I2C_ICSCR, 0);
-	i2c_rcar_write(config, RCAR_I2C_ICSSR, 0);
-
-	/* reset master mode */
-	i2c_rcar_write(config, RCAR_I2C_ICMIER, 0);
-	i2c_rcar_write(config, RCAR_I2C_ICMCR, 0);
-	i2c_rcar_write(config, RCAR_I2C_ICMSR, 0);
-	i2c_rcar_write(config, RCAR_I2C_ICMAR, 0);
-
-	return 0;
-}
-
 static int i2c_rcar_transfer_msg(const struct device *dev, struct i2c_msg *msg){
 	const struct i2c_rcar_cfg *config = DEV_I2C_CFG(dev);
 	uint32_t icmcr = RCAR_I2C_ICMCR_MDBS | RCAR_I2C_ICMCR_MIE;
@@ -245,7 +200,7 @@ static int i2c_rcar_transfer_msg(const struct device *dev, struct i2c_msg *msg){
 		i2c_rcar_write(config, RCAR_I2C_ICMCR, icmcr);
 	}
 
-	return rcar_i2c_finish(dev);
+	return i2c_rcar_finish(dev);
 }
 
 static int i2c_rcar_transfer(const struct device *dev,
@@ -266,7 +221,7 @@ static int i2c_rcar_transfer(const struct device *dev,
 		timeout++;
 	}
 	if (timeout == 10) {
-		return -ETIMEDOUT;
+		return -EIO;
 	}
 
 	do {
@@ -289,6 +244,51 @@ static int i2c_rcar_transfer(const struct device *dev,
 	} while (num_msgs);
 
 	/* Complete without error */
+	return 0;
+}
+
+static int i2c_rcar_configure(const struct device *dev, uint32_t dev_config)
+{
+	const struct i2c_rcar_cfg *config = DEV_I2C_CFG(dev);
+	uint8_t cdf, scgd;
+
+	if (!(dev_config & I2C_MODE_MASTER)) {
+		return -ENOTSUP;
+	}
+
+	if (dev_config & I2C_ADDR_10_BITS) {
+		return -ENOTSUP;
+	}
+
+	switch (I2C_SPEED_GET(dev_config)) {
+	case I2C_SPEED_STANDARD:
+		/* Setting ICCCR to recommended value for 100 kHz bus */
+		cdf = RCAR_I2C_ICCCR_CDF_100_KHZ;
+		scgd = RCAR_I2C_ICCCR_SCGD_100_KHZ;
+		break;
+	case I2C_SPEED_FAST:
+		/* Setting ICCCR to recommended value for 400 kHz bus */
+		cdf = RCAR_I2C_ICCCR_CDF_400_KHZ;
+		scgd = RCAR_I2C_ICCCR_SCGD_400_KHZ;
+		break;
+	default:
+		return -ENOTSUP;
+	}
+
+	i2c_rcar_write(config, RCAR_I2C_ICCCR, (scgd << RCAR_I2C_ICCCR_SCGD_OFF) | cdf);
+
+	/* reset slave mode */
+	i2c_rcar_write(config, RCAR_I2C_ICSIER, 0);
+	i2c_rcar_write(config, RCAR_I2C_ICSAR, 0);
+	i2c_rcar_write(config, RCAR_I2C_ICSCR, 0);
+	i2c_rcar_write(config, RCAR_I2C_ICSSR, 0);
+
+	/* reset master mode */
+	i2c_rcar_write(config, RCAR_I2C_ICMIER, 0);
+	i2c_rcar_write(config, RCAR_I2C_ICMCR, 0);
+	i2c_rcar_write(config, RCAR_I2C_ICMSR, 0);
+	i2c_rcar_write(config, RCAR_I2C_ICMAR, 0);
+
 	return 0;
 }
 
