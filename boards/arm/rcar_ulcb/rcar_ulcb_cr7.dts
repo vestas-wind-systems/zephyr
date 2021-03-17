@@ -82,3 +82,7 @@
 &scif1 {
 	status = "okay";
 };
+
+&i2c2 {
+	status = "okay";
+};

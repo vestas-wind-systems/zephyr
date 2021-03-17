@@ -3,10 +3,12 @@
 
 description: Renesas R-Car Gen3 I2C controller
 
-compatible: "resesas,rcar-gen3-i2c"
+compatible: "renesas,rcar-gen3-i2c"
 
 include: i2c-controller.yaml
 
 properties:
     reg:
+      required: true
+    clocks:
       required: true

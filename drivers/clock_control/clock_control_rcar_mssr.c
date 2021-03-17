@@ -49,6 +49,7 @@ static const uint16_t srcr[] = {
 #define CANFDCKCR_DIVIDER_MASK 0x1FF
 
 #define S3D4_CLK_RATE 66600000
+#define S3D2_CLK_RATE 133330000	/* 133.33 MHz */
 
 static void cpg_write(uint32_t addr, uint32_t val)
 {
@@ -180,6 +181,9 @@ static int cpg_get_rate(const struct device *dev,
 		break;
 	case CPG_CORE_CLK_S3D4:
 		*rate = S3D4_CLK_RATE;
+		break;
+	case CPG_CORE_CLK_S3D2:
+		*rate = S3D2_CLK_RATE;
 		break;
 	default:
 		ret = -ENOTSUP;
