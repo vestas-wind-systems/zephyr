@@ -149,7 +149,7 @@
 		};
 
 		i2c2: i2c@e6510000 {
-			compatible = "renesas,rcar-gen3-i2c";
+			compatible = "renesas,rcar-i2c";
 			clock-frequency = <I2C_BITRATE_STANDARD>;
 			#address-cells = <1>;
 			#size-cells = <0>;

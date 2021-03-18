@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#define DT_DRV_COMPAT renesas_rcar_gen3_i2c
+#define DT_DRV_COMPAT renesas_rcar_i2c
 
 #include <errno.h>
 #include <device.h>
@@ -16,6 +16,7 @@
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(i2c_rcar);
+
 #include "i2c-priv.h"
 
 struct i2c_rcar_cfg {

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 config I2C_RCAR
-	bool "Renesas R-Car Gen3 I2C Driver"
-	depends on SOC_SERIES_RCAR_GEN3
+	bool "Renesas R-Car I2C Driver"
+	depends on SOC_SERIES_RCAR
 	help
-	  Enable Renesas R-Car Gen3 I2C Driver.
+	  Enable Renesas R-Car I2C Driver.
