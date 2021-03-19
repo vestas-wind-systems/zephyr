@@ -118,6 +118,8 @@ Here is current supported features when running Zephyr OS on the R-Car ULCB CR7:
 +-----------+------------------------------+--------------------------------+
 | UART      | uart                         | serial port-polling            |
 +-----------+------------------------------+--------------------------------+
+| I2C       | i2c                          | I2C Master                     |
++-----------+------------------------------+--------------------------------+
 | CAN       | can                          |                                |
 +-----------+------------------------------+--------------------------------+
 | IPM       | GIC 400 interrupt controller |                                |
@@ -201,6 +203,25 @@ Here is CN04 UART interface pinout (depending on your Kingfisher board version) 
 +--------+----------+----------+
 | GND    | 9        | 6        |
 +--------+----------+----------+
+
+I2C :
+-----
+
+ULCB Starter kit boards are not providing any direct physical access on I2C buses but are using them to communicate with on board devices.
+
+These boards are deploying two I2C buses. When plugged on a Kingfisher daughter board, I2C buses are populated with a lot of devices, MUX and I/O Expanders.
+
++--------+------------+---------------+
+| Bus    | Max Speed  | N° of devices |
++========+============+===============+
+| I2C2   | 400KHz     | 14            |
++--------+------------+---------------+
+| I2C4   | 400KHz     | 8             |
++--------+------------+---------------+
+
+While plugged on a Kingfisher daughter board, an I2C port should be available. Hidden behind an un-driven MUX, this port hasn't been tested.
+
+Current I2C driver is allowing user to write and read on any device on I2C2 bus at 100KHz as a Master.
 
 CAN :
 -----
