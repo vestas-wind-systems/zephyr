@@ -123,8 +123,13 @@ struct mcux_flexcan_data {
 static int mcux_flexcan_get_core_clock(const struct device *dev, uint32_t *rate)
 {
 	const struct mcux_flexcan_config *config = dev->config;
+	int err;
 
-	return clock_control_get_rate(config->clock_dev, config->clock_subsys, rate);
+	err = clock_control_get_rate(clock_dev, config->clock_subsys, rate);
+
+	LOG_INF("rate = %d Hz", *rate);
+
+	return err;
 }
 
 static int mcux_flexcan_set_timing(const struct device *dev,
@@ -140,7 +145,15 @@ static int mcux_flexcan_set_timing(const struct device *dev,
 		return -EINVAL;
 	}
 
-	data->timing = *timing;
+	memcpy(&data->timing, timing, sizeof(data->timing));
+	if (data->timing.sjw == 0U) {
+		data->timing.sjw = config->sjw;
+	}
+
+	LOG_INF("set_timing(): prescaler = %d, sjw = %d, seg1 = %d, seg2 = %d, prop = %d",
+		data->timing.prescaler, data->timing.sjw,
+		data->timing.phase_seg1, data->timing.phase_seg2,
+		data->timing.prop_seg);
 
 	timing_tmp.preDivider = data->timing.prescaler - 1U;
 	timing_tmp.rJumpwidth = data->timing.sjw - 1U;
@@ -179,6 +192,11 @@ static int mcux_flexcan_set_mode(const struct device *dev, enum can_mode mode)
 	flexcan_config.timingConfig.phaseSeg1 = data->timing.phase_seg1 - 1U;
 	flexcan_config.timingConfig.phaseSeg2 = data->timing.phase_seg2 - 1U;
 
+	LOG_INF("set_mode(): prescaler = %d, sjw = %d, seg1 = %d, seg2 = %d, prop = %d",
+		data->timing.prescaler, data->timing.sjw,
+		data->timing.phase_seg1, data->timing.phase_seg2,
+		data->timing.prop_seg);
+
 	if (mode == CAN_LOOPBACK_MODE || mode == CAN_SILENT_LOOPBACK_MODE) {
 		flexcan_config.enableLoopBack = true;
 	} else {
@@ -191,8 +209,8 @@ static int mcux_flexcan_set_mode(const struct device *dev, enum can_mode mode)
 	}
 
 	FLEXCAN_Init(config->base, &flexcan_config, clock_freq);
-
-	return 0;
+	//FLEXCAN_SetTimingConfig(config->base, &flexcan_config.timingConfig);
+	return mcux_flexcan_set_timing(dev, &data->timing, NULL);
 }
 
 static void mcux_flexcan_copy_zframe_to_frame(const struct zcan_frame *src,
@@ -698,10 +716,14 @@ static int mcux_flexcan_init(const struct device *dev)
 			LOG_ERR("Can't find timing for given param");
 			return -EIO;
 		}
-		LOG_DBG("Presc: %d, Seg1S1: %d, Seg2: %d",
-			data->timing.prescaler, data->timing.phase_seg1,
-			data->timing.phase_seg2);
-		LOG_DBG("Sample-point err : %d", err);
+		LOG_INF("init(): prescaler = %d, sjw = %d, seg1 = %d, seg2 = %d, prop = %d",
+			data->timing.prescaler, data->timing.sjw,
+			data->timing.phase_seg1, data->timing.phase_seg2,
+			data->timing.prop_seg);
+		/* LOG_INF("Presc: %d, Seg1S1: %d, Seg2: %d", */
+		/* 	data->timing.prescaler, data->timing.phase_seg1, */
+		/* 	data->timing.phase_seg2); */
+		LOG_INF("Sample-point err : %d", err);
 	} else {
 		data->timing.prop_seg = config->prop_seg;
 		data->timing.phase_seg1 = config->phase_seg1;

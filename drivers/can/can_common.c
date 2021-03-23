@@ -176,6 +176,7 @@ static int update_sampling_pnt(uint32_t ts, uint32_t sp, struct can_timing *res,
 	res->phase_seg2 = ts2;
 
 	sp_calc = (CAN_SYNC_SEG + ts1) * 1000 / ts;
+	LOG_INF("sp_calc = %d", sp_calc);
 
 	return sp_calc > sp ? sp_calc - sp : sp - sp_calc;
 }
