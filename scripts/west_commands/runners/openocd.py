@@ -188,10 +188,10 @@ class OpenOcdBinaryRunner(ZephyrBinaryRunner):
         cmd = (self.openocd_cmd + self.serial + self.cfg_cmd +
                       pre_init_cmd + ['-c', 'init',
                                        '-c', 'targets',
-                                       '-c', 'reset halt',
+                                       '-c', 'start_cr7',
                                        '-c', 'load_image ' + self.elf_name,
-                                       '-c', 'resume ' + ep_addr,
-                                       '-c', 'shutdown'])
+                                       '-c', 'resume',
+                                      '-c', 'shutdown'])
         self.check_call(cmd)
 
     def do_attach_debug(self, command, **kwargs):
@@ -211,9 +211,9 @@ class OpenOcdBinaryRunner(ZephyrBinaryRunner):
                        '-c', 'gdb_port {}'.format(self.gdb_port)] +
                       pre_init_cmd + ['-c', 'init',
                                        '-c', 'targets',
-                                       '-c', 'halt'])
+                                       '-c', 'start_cr7'])
         gdb_cmd = (self.gdb_cmd + self.tui_arg +
-                   ['-ex', 'target remote :{}'.format(self.gdb_port),
+                   ['-ex', 'target remote :{}'.format(3334),
                     self.elf_name])
         if command == 'debug':
             gdb_cmd.extend(['-ex', 'load'])
