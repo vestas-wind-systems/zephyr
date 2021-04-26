@@ -1,0 +1,12 @@
+# Copyright (c) 2021 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+description: Renesas R-Car pinmux node
+
+compatible: "renesas,rcar-pinmux"
+
+include: base.yaml
+
+properties:
+    reg:
+      required: true
