@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2020 IoT.bzh
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ */
+
+/dts-v1/;
+#include <arm/renesas/gen3/r8a77990.dtsi>
+
+/ {
+	model = "Renesas Ebisu board";
+	compatible = "renesas,ebisu-r7";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,ipc_shm = &sram_shm;
+		zephyr,ipc = &mfis;
+		zephyr,can-primary = &can0;
+	};
+
+	sram_shm: memory@42000000 {
+		compatible = "mmio-sram";
+		reg = <0x42000000 0x400000>;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		user_led: led_4 {
+			gpios = <&gpio5 5 GPIO_ACTIVE_HIGH>;
+			label = "User LED";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		user_button: button {
+			label = "User switch";
+			gpios = <&gpio5 6 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	display {
+		compatible = "renesas,rcar-display";
+		label = "DISPLAY";
+		display_path = < 0 >;
+		status = "okay";
+	};
+
+	vspd {
+		compatible = "renesas,rcar_vspd";
+		label = "rcar-vspd";
+		status = "okay";
+	};
+
+	aliases {
+		led0 = &user_led;
+		sw0  = &user_button;
+	};
+};
+
+&gpio5 {
+	status = "okay";
+};
+
+&cmt0 {
+	status = "okay";
+	clock-frequency = <32000>;
+};
+
+&mfis {
+	status = "okay";
+};
+
+&pfc {
+	status = "okay";
+};
+
+&can0 {
+	status = "okay";
+};
+
+&scif2 {
+	/* When enabling scif2, make sure it's not in use
+	 * by another component: u-boot, linux ..
+	 */
+	status = "disabled";
+};

@@ -1,0 +1,12 @@
+identifier: rcar_ebisu_cr7
+name: Cortex r7 for Renesas Ebisu
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - gpio
+  - can
+ram: 768
