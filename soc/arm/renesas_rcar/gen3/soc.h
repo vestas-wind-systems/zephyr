@@ -17,6 +17,8 @@
 
 #if defined(CONFIG_SOC_R8A77951)
 #include "pfc-r8a77951.h"
+#elif defined(CONFIG_SOC_R8A77990)
+#include "pfc-r8a77990.h"
 #endif
 
 #endif /* _SOC__H_ */
