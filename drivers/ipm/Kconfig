@@ -112,6 +112,11 @@ config IPM_INTEL_ADSP
 	help
 	  Driver for the Host-DSP Mailbox Communication channel.
 
+config IPM_RCAR
+	bool "Renesas RCAR IPM driver"
+	help
+	  Renesas RCAR IPM driver
+
 module = IPM
 module-str = ipm
 source "subsys/logging/Kconfig.template.log_config"
