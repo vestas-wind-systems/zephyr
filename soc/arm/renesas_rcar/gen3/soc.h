@@ -15,4 +15,8 @@
 #define __GIC_PRESENT 0
 #define __TIM_PRESENT 0
 
+#if defined(CONFIG_SOC_R8A77951)
+#include "pfc-r8a77951.h"
+#endif
+
 #endif /* _SOC__H_ */
