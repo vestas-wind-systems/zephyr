@@ -262,6 +262,7 @@
 /drivers/peci/                            @albertofloyd @franciscomunoz @scottwcpg
 /drivers/pinmux/*hsdk*                    @iriszzw
 /drivers/pinmux/*it8xxx2*                 @ite
+/drivers/pinmux/*rcar*                    @julien-massot
 /drivers/pm_cpu_ops/                      @carlocaione
 /drivers/ps2/                             @albertofloyd @franciscomunoz @scottwcpg
 /drivers/pwm/*rv32m1*                     @henrikbrixandersen
