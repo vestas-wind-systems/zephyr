@@ -17,6 +17,13 @@
 		zephyr,console = &scif1;
 		zephyr,shell-uart = &scif1;
 		zephyr,can-primary = &can0;
+		zephyr,ipc_shm = &sram_shm;
+		zephyr,ipc = &mfis;
+	};
+
+	sram_shm: memory@42000000 {
+		compatible = "mmio-sram";
+		reg = <0x42000000 0x400000>;
 	};
 
 	leds {
@@ -63,5 +70,9 @@
 };
 
 &i2c4 {
+	status = "okay";
+};
+
+&mfis {
 	status = "okay";
 };
