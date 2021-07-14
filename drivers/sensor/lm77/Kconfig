@@ -1,0 +1,8 @@
+# Copyright (c) 2021 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+config LM77
+	bool "LM77 Temperature Sensor"
+	depends on I2C
+	help
+	  Enable driver for the LM77 temperature sensor.
