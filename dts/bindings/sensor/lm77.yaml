@@ -1,0 +1,17 @@
+# Copyright (c) 2021 Vestas Wind Systems A/S
+# SPDX-License-Identifier: UNLICENSED
+
+description: |
+  LM77 digital temperature sensor
+
+compatible: "lm77"
+
+include: i2c-device.yaml
+
+properties:
+    int-gpios:
+      type: phandle-array
+      required: false
+      description: |
+        Identifies the INT signal, which is active-low open drain when
+        produced by the sensor.
