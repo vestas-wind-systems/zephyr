@@ -37,6 +37,12 @@ foreach(root ${kconfig_board_root})
   set(OPERATION APPEND)
 endforeach()
 
+# If the application provided a macro to auto-generate or otherwise set Kconfig
+# defaults, handle it here.
+if(COMMAND app_set_kconfig)
+  app_set_kconfig()
+endif()
+
 if(KCONFIG_ROOT)
   zephyr_file(APPLICATION_ROOT KCONFIG_ROOT)
   # KCONFIG_ROOT has either been specified as a CMake variable or is

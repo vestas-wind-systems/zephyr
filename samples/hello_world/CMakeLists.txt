@@ -2,6 +2,12 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 
+macro(app_set_kconfig)
+  file(WRITE ${APPLICATION_BINARY_DIR}/foo.conf
+    "CONFIG_I2C=y"
+    )
+endmacro()
+
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(hello_world)
 
