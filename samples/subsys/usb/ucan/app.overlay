@@ -1,0 +1,12 @@
+/*
+ * Copyright (c) 2022-2023 Vestas Wind Systems A/S
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&zephyr_udc0 {
+	ucan0: ucan0 {
+		compatible = "zephyr,ucan";
+		label = "UCAN_0";
+	};
+};

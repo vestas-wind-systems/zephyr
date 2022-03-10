@@ -1,0 +1,20 @@
+# Copyright (c) 2022-2023 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+config SAMPLE_CAN_TX_QUEUE_SIZE
+	int "CAN frame transmit queue size"
+	default 3
+	default 1 if CAN_MCP2515
+	range 1 256
+	help
+	  Number of concurrent TX frames supported (depends on the number of TX
+	  mailboxes/TX queue size/TX FIFO size of the CAN controller).
+
+config SAMPLE_CAN_RX_QUEUE_SIZE
+	int "CAN frame receive queue size"
+	default 10
+	range 1 256
+	help
+	  Number of concurrent RX frames supported.
+
+source "Kconfig.zephyr"

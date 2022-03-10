@@ -1,0 +1,7 @@
+sample:
+  name: USB CAN adapter sample
+tests:
+  sample.usb.ucan:
+    depends_on: usb_device gpio can
+    filter: dt_chosen_enabled("zephyr,canbus")
+    tags: usb can

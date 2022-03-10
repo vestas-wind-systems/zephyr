@@ -5,6 +5,7 @@ zephyr_sources_ifdef(CONFIG_USB_MASS_STORAGE msc.c)
 zephyr_sources_ifdef(CONFIG_USB_DEVICE_BLUETOOTH bluetooth.c)
 zephyr_sources_ifdef(CONFIG_USB_DEVICE_BT_H4 bt_h4.c)
 zephyr_sources_ifdef(CONFIG_USB_DEVICE_LOOPBACK loopback.c)
+zephyr_sources_ifdef(CONFIG_USB_DEVICE_UCAN ucan.c)
 
 add_subdirectory_ifdef(CONFIG_USB_DEVICE_AUDIO audio)
 add_subdirectory_ifdef(CONFIG_USB_DEVICE_NETWORK netusb)

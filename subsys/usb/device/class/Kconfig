@@ -11,6 +11,8 @@ source "subsys/usb/device/class/Kconfig.bt"
 
 source "subsys/usb/device/class/Kconfig.test"
 
+source "subsys/usb/device/class/Kconfig.ucan"
+
 source "subsys/usb/device/class/netusb/Kconfig"
 
 source "subsys/usb/device/class/hid/Kconfig"
