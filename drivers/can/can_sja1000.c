@@ -584,6 +584,17 @@ static void can_sja1000_handle_transmit_irq(const struct device *dev)
 	can_sja1000_tx_done(dev, status);
 }
 
+#ifdef CONFIG_CAN_STATS
+static void can_sja1000_handle_arbitration_lost_irq(const struct device *dev)
+{
+	/* Read the Arbitration Lost Capture register to re-activate it */
+	(void)can_sja1000_read_reg(dev, CAN_SJA1000_ALC);
+
+       CAN_STATS_ARB_LOST_INC(dev);
+
+}
+#endif /* CONFIG_CAN_STATS */
+
 static void can_sja1000_handle_error_warning_irq(const struct device *dev)
 {
 	struct can_sja1000_data *data = dev->data;
@@ -634,6 +645,12 @@ void can_sja1000_isr(const struct device *dev)
 	if ((ir & CAN_SJA1000_IR_RI) != 0) {
 		can_sja1000_handle_receive_irq(dev);
 	}
+
+#ifdef CONFIG_CAN_STATS
+	if ((ir & CAN_SJA1000_IR_ALI) != 0) {
+		can_sja1000_handle_arbitration_lost_irq(dev);
+	}
+#endif /* CONFIG_CAN_STATS */
 
 	if ((ir & CAN_SJA1000_IR_EI) != 0) {
 		can_sja1000_handle_error_warning_irq(dev);
@@ -739,6 +756,9 @@ int can_sja1000_init(const struct device *dev)
 
 	/* Enable interrupts */
 	can_sja1000_write_reg(dev, CAN_SJA1000_IER,
+#ifdef CONFIG_CAN_STATS
+			      CAN_SJA1000_IER_ALIE |
+#endif /* CONFIG_CAN_STATS */
 			      CAN_SJA1000_IER_RIE | CAN_SJA1000_IER_TIE |
 			      CAN_SJA1000_IER_EIE | CAN_SJA1000_IER_EPIE);
 

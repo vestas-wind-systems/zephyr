@@ -468,6 +468,7 @@ STATS_SECT_ENTRY32(crc_error)
 STATS_SECT_ENTRY32(form_error)
 STATS_SECT_ENTRY32(ack_error)
 STATS_SECT_ENTRY32(rx_overrun)
+STATS_SECT_ENTRY32(arb_lost)
 STATS_SECT_END;
 
 STATS_NAME_START(can)
@@ -478,6 +479,7 @@ STATS_NAME(can, crc_error)
 STATS_NAME(can, form_error)
 STATS_NAME(can, ack_error)
 STATS_NAME(can, rx_overrun)
+STATS_NAME(can, arb_lost)
 STATS_NAME_END(can);
 
 /** @endcond */
@@ -580,6 +582,17 @@ struct can_device_state {
 	STATS_INC(Z_CAN_GET_STATS(dev_), rx_overrun)
 
 /**
+ * @brief Increment the arbitration lost counter for a CAN device
+ *
+ * The arbitration lost counter is incremented when the CAN controller detects a
+ * loss of arbitration during transmission of a CAN frame.
+ *
+ * @param dev_ Pointer to the device structure for the driver instance.
+ */
+#define CAN_STATS_ARB_LOST_INC(dev_)                   \
+	STATS_INC(Z_CAN_GET_STATS(dev_), arb_lost)
+
+/**
  * @brief Zero all statistics for a CAN device
  *
  * The driver is reponsible for resetting the statistics before starting the CAN
@@ -610,7 +623,7 @@ struct can_device_state {
 	{								\
 		struct can_device_state *state =			\
 			CONTAINER_OF(dev->state, struct can_device_state, devstate); \
-		stats_init(&state->stats.s_hdr, STATS_SIZE_32, 7,	\
+		stats_init(&state->stats.s_hdr, STATS_SIZE_32, 8,	\
 			   STATS_NAME_INIT_PARMS(can));			\
 		stats_register(dev->name, &(state->stats.s_hdr));	\
 		if (init_fn != NULL) {					\
@@ -663,6 +676,7 @@ struct can_device_state {
 #define CAN_STATS_ACK_ERROR_INC(dev_)
 #define CAN_STATS_RX_OVERRUN_INC(dev_)
 #define CAN_STATS_RESET(dev_)
+#define CAN_STATS_ARB_LOST_INC(dev_)
 
 #define CAN_DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,	\
 			     prio, api, ...)				\
