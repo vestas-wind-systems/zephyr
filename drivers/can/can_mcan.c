@@ -73,12 +73,6 @@ static int can_mcan_exit_sleep_mode(const struct device *dev)
 
 	while ((cccr & CAN_MCAN_CCCR_CSA) == CAN_MCAN_CCCR_CSA) {
 		if (k_cycle_get_32() - start_time > k_ms_to_cyc_ceil32(CAN_INIT_TIMEOUT_MS)) {
-			cccr |= CAN_MCAN_CCCR_CSR;
-			err = can_mcan_write_reg(dev, CAN_MCAN_CCCR, cccr);
-			if (err != 0) {
-				goto unlock;
-			}
-
 			err = -EAGAIN;
 			goto unlock;
 		}
@@ -126,12 +120,6 @@ static int can_mcan_enter_init_mode(const struct device *dev, k_timeout_t timeou
 
 	while ((cccr & CAN_MCAN_CCCR_INIT) == 0U) {
 		if (k_uptime_ticks() - start_time > timeout.ticks) {
-			cccr &= ~CAN_MCAN_CCCR_INIT;
-			err = can_mcan_write_reg(dev, CAN_MCAN_CCCR, cccr);
-			if (err != 0) {
-				goto unlock;
-			}
-
 			err = -EAGAIN;
 			goto unlock;
 		}
