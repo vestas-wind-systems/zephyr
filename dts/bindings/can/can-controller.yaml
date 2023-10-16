@@ -3,6 +3,11 @@
 include: base.yaml
 
 properties:
+  can-controller:
+    type: boolean
+    default: true
+    description: |
+      Conveys this node is a CAN controller. Defaults is `true` for all CAN controllers.
   bus-speed:
     type: int
     required: true
