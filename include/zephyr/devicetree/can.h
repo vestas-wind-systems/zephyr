@@ -23,6 +23,24 @@ extern "C" {
  */
 
 /**
+ * @brief
+ */
+#define DT_CAN_FOREACH_CTLR_HELPER(node_id, fn)	\
+	IS_ENABLED((DT_PROP_OR(node_id, can_controller, 0), (fn(node_id)))
+
+/**
+ * @brief Invokes @p fn for every CAN controller node in the tree.
+ *
+ * The macro @p fn must take one parameter, which will be a node identifier. The macro is expanded
+ * once for each CAN controller node in the tree.  The order that nodes are visited in is not
+ * specified.
+ *
+ * @param fn macro to invoke
+ */
+#define DT_CAN_FOREACH_CTLR(fn) \
+	DT_FOREACH_NODE_VARGS(DT_CAN_FOREACH_CTLR_HELPER, fn)
+
+/**
  * @brief Get the maximum transceiver bitrate for a CAN controller
  *
  * The bitrate will be limited to the maximum bitrate supported by the CAN
