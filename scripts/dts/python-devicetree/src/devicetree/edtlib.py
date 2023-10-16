@@ -2630,7 +2630,7 @@ def _check_prop_by_type(prop_name: str,
     if default is None:
         return
 
-    if prop_type in {"boolean", "compound", "phandle", "phandles",
+    if prop_type in {"compound", "phandle", "phandles",
                      "phandle-array", "path"}:
         _err("'default:' can't be combined with "
              f"'type: {prop_type}' for '{prop_name}' in "
@@ -2642,7 +2642,8 @@ def _check_prop_by_type(prop_name: str,
         # PropertySpec.default.
 
         if prop_type == "int" and isinstance(default, int) or \
-           prop_type == "string" and isinstance(default, str):
+           prop_type == "string" and isinstance(default, str) or \
+           prop_type == "boolean" and isinstance(default, bool):
             return True
 
         # array, uint8-array, or string-array

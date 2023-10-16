@@ -16,9 +16,9 @@ from devicetree import edtlib
 #
 # Run it using pytest (https://docs.pytest.org/en/stable/usage.html):
 #
-#   $ pytest testedtlib.py
+#   $ pytest tests/test_edtlib.py
 #
-# See the comment near the top of testdtlib.py for additional pytest advice.
+# See the comment near the top of test_dtlib.py for additional pytest advice.
 #
 # test.dts is the main test file. test-bindings/ and test-bindings-2/ has
 # bindings. The tests mostly use string comparisons via the various __repr__()
@@ -520,15 +520,15 @@ def test_prop_defaults():
         edt = edtlib.EDT("test.dts", ["test-bindings"])
 
     verify_props(edt.get_node("/defaults"),
-                 ['int',
+                 ['boolean', 'int',
                   'array', 'uint8-array',
                   'string', 'string-array',
                   'default-not-used'],
-                 ['int',
+                 ['boolean', 'int',
                   'array', 'uint8-array',
                   'string', 'string-array',
                   'int'],
-                 [123,
+                 [True, 123,
                   [1,2,3], b'\x89\xab\xcd',
                   'hello', ['hello','there'],
                   234])

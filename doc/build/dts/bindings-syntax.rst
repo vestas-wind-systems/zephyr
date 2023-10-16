@@ -222,6 +222,11 @@ Here are some more examples.
            required: true
            const: 1
 
+       boolean-with-default:
+           type: boolean
+           default: true
+           description: Value for boolean feature, defaults to always enabled.
+
        int-with-default:
            type: int
            default: 123

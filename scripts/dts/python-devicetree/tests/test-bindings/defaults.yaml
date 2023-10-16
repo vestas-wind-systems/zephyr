@@ -5,6 +5,11 @@ description: Property default value test
 compatible: "defaults"
 
 properties:
+  boolean:
+    type: boolean
+    required: false
+    default: true
+
   int:
     type: int
     required: false
