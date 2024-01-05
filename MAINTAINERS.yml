@@ -919,6 +919,7 @@ Release Notes:
     - drivers/net/canbus.c
     - dts/bindings/can/
     - dts/bindings/phy/can-transceiver*
+    - dts/bindings/phy/nxp,tja1145a.yaml
     - include/zephyr/canbus/
     - include/zephyr/devicetree/can.h
     - include/zephyr/drivers/can.h

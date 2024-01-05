@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2024 Vestas Wind Systems A/S
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+&arduino_spi {
+	status = "okay";
+	cs-gpios = <&arduino_header 16 GPIO_ACTIVE_LOW>; /* D10 */
+
+	transceiver_tja1145a_evb: can-phy@0 {
+		compatible = "nxp,tja1145a";
+		reg = <0>;
+		/* TODO: reduced spi-max-frequency to accommodate sleep mode? */
+		spi-max-frequency = <1000000>;
+		max-bitrate = <5000000>;
+		status = "okay";
+		#phy-cells = <0>;
+	};
+};

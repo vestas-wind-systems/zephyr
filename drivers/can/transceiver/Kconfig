@@ -7,7 +7,7 @@ menu "CAN transceiver drivers"
 
 config CAN_TRANSCEIVER_INIT_PRIORITY
 	int "CAN transceiver driver init priority"
-	default 45
+	default 70
 	help
 	  CAN transceiver device driver initialization priority.
 
@@ -18,5 +18,13 @@ config CAN_TRANSCEIVER_GPIO
 	depends on GPIO
 	help
 	  Enable support for GPIO controlled CAN transceivers.
+
+config CAN_TRANSCEIVER_TJA1145A
+	bool "NXP TJA1145A CAN transceiver"
+	default y
+	depends on DT_HAS_NXP_TJA1145A_ENABLED
+	select SPI
+	help
+	  Enable support for the NXP TJA1145A family of CAN transceivers.
 
 endmenu

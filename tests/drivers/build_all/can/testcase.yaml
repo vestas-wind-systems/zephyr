@@ -25,3 +25,6 @@ tests:
       - native_posix_64
       - native_sim
       - native_sim_64
+  drivers.build_all.can.transceiver.tja1145a:
+    extra_args: SHIELD=tja1145a_evb
+    platform_allow: frdm_k64f

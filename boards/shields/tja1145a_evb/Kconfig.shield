@@ -1,0 +1,5 @@
+# Copyright (c) 2024 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+config SHIELD_TJA1145A_EVB
+	def_bool $(shields_list_contains,tja1145a_evb)

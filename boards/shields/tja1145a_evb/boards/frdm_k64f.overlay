@@ -1,0 +1,11 @@
+/*
+ * Copyright (c) 2024 Vestas Wind Systems A/S
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&flexcan0 {
+	/* K64F CAN0_TX (PTB18, J1 pin 1) must be connected to TJA1145A TXB */
+	/* K64F CAN0_RX (PTB19, J1 pin 3) must be connected to TJA1145A RXB */
+	phys = <&transceiver_tja1145a_evb>;
+};

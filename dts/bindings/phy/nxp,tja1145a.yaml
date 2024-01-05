@@ -1,0 +1,12 @@
+# Copyright (c) 2024 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  NXP TJA1145A high-speed CAN transceiver for partial networking
+
+  Example:
+    TODO
+
+compatible: "nxp,tja1145a"
+
+include: [ can-transceiver.yaml, spi-device.yaml ]
