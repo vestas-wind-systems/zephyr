@@ -294,7 +294,13 @@ DT_FOREACH_STATUS_OKAY(nxp_lpc_ctimer, CTIMER_CLOCK_SETUP)
 #endif
 
 #if DT_NODE_HAS_COMPAT_STATUS(DT_NODELABEL(can0), nxp_lpc_mcan, okay)
-	CLOCK_SetClkDiv(kCLOCK_DivCanClk, 1U, false);
+#if defined(CONFIG_SOC_LPC55S06) || !defined(CONFIG_INIT_PLL1)
+	/* 96MHz / 4 = 24MHz */
+	CLOCK_SetClkDiv(kCLOCK_DivCanClk, 4U, false);
+#else
+	/* 144MHz / 6 = 24MHz */
+	CLOCK_SetClkDiv(kCLOCK_DivCanClk, 6U, false);
+#endif
 	CLOCK_AttachClk(kMCAN_DIV_to_MCAN);
 	RESET_PeripheralReset(kMCAN_RST_SHIFT_RSTn);
 #endif
