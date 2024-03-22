@@ -235,6 +235,15 @@ __weak void clk_init(void)
 	CLOCK_SetIpSrc(kCLOCK_Ftm3,
 		       DT_CLOCKS_CELL(DT_NODELABEL(ftm3), ip_source));
 #endif
+
+#ifdef CONFIG_CAN_FLEXCAN
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(flexcan0))
+	(void)CLOCK_EnableClock(kCLOCK_Flexcan0);
+#endif
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(flexcan1))
+	(void)CLOCK_EnableClock(kCLOCK_Flexcan1);
+#endif
+#endif /* CONFIG_CAN_FLEXCAN */
 }
 
 void soc_early_init_hook(void)
