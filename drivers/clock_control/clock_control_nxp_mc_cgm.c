@@ -42,7 +42,7 @@ const clock_pcfs_config_t pcfs_config = {.maxAllowableIDDchange = NXP_PLL_MAXIDO
 
 static int mc_cgm_clock_control_on(const struct device *dev, clock_control_subsys_t sub_system)
 {
-#if defined(CONFIG_CAN_MCUX_FLEXCAN)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 	switch ((uint32_t)sub_system) {
 	case MCUX_FLEXCAN0_CLK:
 		CLOCK_EnableClock(kCLOCK_Flexcan0);
@@ -65,7 +65,7 @@ static int mc_cgm_clock_control_on(const struct device *dev, clock_control_subsy
 	default:
 		break;
 	}
-#endif /* defined(CONFIG_CAN_MCUX_MCAN) */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #if defined(CONFIG_UART_MCUX_LPUART)
 	switch ((uint32_t)sub_system) {
@@ -265,7 +265,7 @@ static int mc_cgm_get_subsys_rate(const struct device *dev, clock_control_subsys
 		break;
 #endif /* defined(CONFIG_I2C_MCUX_LPI2C) */
 
-#if defined(CONFIG_CAN_MCUX_FLEXCAN)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 	case MCUX_FLEXCAN0_CLK:
 		*rate = CLOCK_GetFlexcanPeClkFreq(0);
 		break;
@@ -284,7 +284,7 @@ static int mc_cgm_get_subsys_rate(const struct device *dev, clock_control_subsys
 	case MCUX_FLEXCAN5_CLK:
 		*rate = CLOCK_GetFlexcanPeClkFreq(5);
 		break;
-#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #if defined(CONFIG_COUNTER_MCUX_STM)
 	case MCUX_STM0_CLK:

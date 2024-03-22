@@ -92,7 +92,7 @@ static int mcux_lpc_syscon_clock_control_on(const struct device *dev,
 	}
 #endif
 
-#if defined(CONFIG_CAN_MCUX_FLEXCAN)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 	switch ((uint32_t)sub_system) {
 #if defined(CONFIG_SOC_FAMILY_MCXA)
 	case MCUX_FLEXCAN0_CLK:
@@ -109,7 +109,7 @@ static int mcux_lpc_syscon_clock_control_on(const struct device *dev,
 	default:
 		break;
 	}
-#endif /* defined(CONFIG_CAN_MCUX_MCAN) */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #ifdef CONFIG_ETH_NXP_ENET
 	if ((uint32_t)sub_system == MCUX_ENET_CLK) {
@@ -603,7 +603,7 @@ static int mcux_lpc_syscon_clock_control_get_subsys_rate(const struct device *de
 #endif
 #endif /* CONFIG_ADC_MCUX_LPADC */
 
-#if defined(CONFIG_CAN_MCUX_FLEXCAN)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 #if defined(CONFIG_SOC_FAMILY_MCXA)
 	case MCUX_FLEXCAN0_CLK:
 		*rate = CLOCK_GetFlexcanClkFreq();
@@ -616,7 +616,7 @@ static int mcux_lpc_syscon_clock_control_get_subsys_rate(const struct device *de
 		*rate = CLOCK_GetFlexcanClkFreq(1);
 		break;
 #endif /* defined(CONFIG_SOC_FAMILY_MCXA) */
-#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #if defined(CONFIG_MCUX_FLEXIO)
 	case MCUX_FLEXIO0_CLK:
