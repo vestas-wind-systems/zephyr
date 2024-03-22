@@ -496,7 +496,7 @@ __weak void clock_init(void)
 		BLK_CTRL_WAKEUPMIX_NETC_PORT_MISC_CFG_TMR_EXT_CLK_SEL_MASK;
 #endif
 
-#ifdef CONFIG_CAN_MCUX_FLEXCAN
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(flexcan1), okay)
 	/* Configure CAN1 using MuxSysPll3Out */
@@ -519,7 +519,7 @@ __weak void clock_init(void)
 	CLOCK_SetRootClock(kCLOCK_Root_Can3, &rootCfg);
 #endif
 
-#endif /* CONFIG_CAN_MCUX_FLEXCAN */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #ifdef CONFIG_MCUX_FLEXIO
 

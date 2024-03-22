@@ -115,6 +115,11 @@ __weak void clock_init(void)
 	CLOCK_EnableUsbfs0Clock(kCLOCK_UsbSrcPll0,
 				DT_PROP(DT_PATH(cpus, cpu_0), clock_frequency));
 #endif
+#ifdef CONFIG_CAN_FLEXCAN
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(flexcan0))
+	(void)CLOCK_EnableClock(kCLOCK_Flexcan0);
+#endif
+#endif /* CONFIG_CAN_FLEXCAN */
 }
 
 /**

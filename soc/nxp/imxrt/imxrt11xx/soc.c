@@ -462,7 +462,7 @@ __weak void clock_init(void)
 				      PGMC_BPC_BPC_POWER_CTRL_ISO_OFF_SOFT_MASK);
 #endif
 
-#ifdef CONFIG_CAN_MCUX_FLEXCAN
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 #if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(flexcan1))
 	/* Configure CAN1 using Osc48MDiv2 */
 	rootCfg.mux = kCLOCK_CAN1_ClockRoot_MuxOscRc48MDiv2;

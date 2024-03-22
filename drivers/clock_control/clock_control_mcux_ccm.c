@@ -108,11 +108,13 @@ static const clock_ip_name_t i2c_clk_root[] = {
 };
 #endif
 
-#if defined(CONFIG_CAN_MCUX_FLEXCAN) && defined(CONFIG_SOC_MIMX8ML8)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
+#if defined(CONFIG_SOC_MIMX8ML8)
 static const clock_ip_name_t flexcan_clk_root[] = {
 	kCLOCK_RootFlexCan1,
 	kCLOCK_RootFlexCan2,
 };
+#endif
 #endif
 
 static int mcux_ccm_on(const struct device *dev,
@@ -395,7 +397,7 @@ static int mcux_ccm_get_subsys_rate(const struct device *dev,
 	} break;
 #endif
 
-#ifdef CONFIG_CAN_MCUX_FLEXCAN
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 #ifdef CONFIG_SOC_MIMX8ML8
 	case IMX_CCM_CAN1_CLK:
 	case IMX_CCM_CAN2_CLK:

@@ -192,7 +192,7 @@ __weak void clock_init(void)
 		CLOCK_EnableClock(kCLOCK_Lpspi1);
 	}
 
-	if (IS_ENABLED(CONFIG_CAN_MCUX_FLEXCAN)) {
+	if (IS_ENABLED(CONFIG_CAN_MCUX_FLEXCAN) || IS_ENABLED(CONFIG_CAN_FLEXCAN)) {
 		CLOCK_EnableClock(kCLOCK_Can0);
 	}
 

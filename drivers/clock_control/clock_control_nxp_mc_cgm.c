@@ -45,7 +45,7 @@ static int mc_cgm_clock_control_on(const struct device *dev, clock_control_subsy
 	uint32_t clock_name = (uint32_t)sub_system;
 
 	switch (clock_name) {
-#if defined(CONFIG_CAN_MCUX_FLEXCAN)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 	case MCUX_FLEXCAN0_CLK:
 		CLOCK_EnableClock(kCLOCK_Flexcan0);
 		break;
@@ -64,7 +64,7 @@ static int mc_cgm_clock_control_on(const struct device *dev, clock_control_subsy
 	case MCUX_FLEXCAN5_CLK:
 		CLOCK_EnableClock(kCLOCK_Flexcan5);
 		break;
-#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #if defined(CONFIG_UART_MCUX_LPUART)
 	case MCUX_LPUART0_CLK:
@@ -269,7 +269,7 @@ static int mc_cgm_get_subsys_rate(const struct device *dev, clock_control_subsys
 		break;
 #endif /* defined(CONFIG_I2C_MCUX_LPI2C) */
 
-#if defined(CONFIG_CAN_MCUX_FLEXCAN)
+#if defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN)
 	case MCUX_FLEXCAN0_CLK:
 		*rate = CLOCK_GetFlexcanPeClkFreq(0);
 		break;
@@ -288,7 +288,7 @@ static int mc_cgm_get_subsys_rate(const struct device *dev, clock_control_subsys
 	case MCUX_FLEXCAN5_CLK:
 		*rate = CLOCK_GetFlexcanPeClkFreq(5);
 		break;
-#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) */
+#endif /* defined(CONFIG_CAN_MCUX_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN) */
 
 #if defined(CONFIG_COUNTER_MCUX_STM)
 	case MCUX_STM0_CLK:
