@@ -1,0 +1,111 @@
+# NXP FlexCAN configuration options
+
+# Copyright (c) 2019-2026 Vestas Wind Systems A/S
+# SPDX-License-Identifier: Apache-2.0
+
+choice
+	prompt "NXP FlexCAN"
+	default CAN_MCUX_FLEXCAN
+	depends on DT_HAS_NXP_FLEXCAN_ENABLED
+	depends on CLOCK_CONTROL
+
+config CAN_MCUX_FLEXCAN
+	bool "MCUX backend"
+	select PINCTRL
+	help
+	  Enable support for the NXP FlexCAN (MCUXpresso backend).
+
+config CAN_FLEXCAN
+	bool "Native backend [EXPERIMENTAL]"
+	select EXPERIMENTAL
+	select PINCTRL
+	help
+	  Enable support for the NXP FlexCAN (native backend).
+
+endchoice
+
+if CAN_MCUX_FLEXCAN
+
+config CAN_MCUX_FLEXCAN_FD
+	bool # hidden
+	default y
+	depends on DT_HAS_NXP_FLEXCAN_FD_ENABLED && CAN_FD_MODE
+	help
+	  Enable support for CAN FD capable NXP FlexCAN devices.
+
+config CAN_MCUX_FLEXCAN_WAIT_TIMEOUT
+	int "Maximum number of wait loop iterations"
+	default 10000
+	help
+	  Maximum number of wait loop iterations for the MCUX FlexCAN HAL when entering/leaving
+	  freeze mode.
+
+config CAN_MCUX_FLEXCAN_MAX_FILTERS
+	int "Maximum number of concurrently active RX filters"
+	range 0 128
+	default 5 if CAN_MCUX_FLEXCAN_FD
+	default 13
+	help
+	  Default maximum number of concurrently active RX filters. The maximum value depends on the
+	  number of available message buffers for each FlexCAN instance.
+
+	  This default can be overridden on a per-instance basis via the "max-filters" devicetree
+	  property.
+
+	  CAN FD mode uses larger message buffers, resulting in fewer available filters.
+
+endif # CAN_MCUX_FLEXCAN
+
+if CAN_FLEXCAN
+
+config CAN_FLEXCAN_FD
+	bool # hidden
+	default y
+	depends on CAN_FD_MODE
+	depends on DT_HAS_NXP_FLEXCAN_FD_ENABLED
+	help
+	  Enable support for CAN FD capable NXP FlexCAN devices.
+
+config CAN_FLEXCAN_MAX_FILTERS
+	int "Maximum number of concurrently active RX filters"
+	range 0 128
+	default 5 if CAN_FLEXCAN_FD
+	default 13
+	range 1 32
+	help
+	  Default maximum number of concurrently active RX filters. The maximum value depends on the
+	  number of available message buffers for each FlexCAN instance.
+
+	  This default can be overridden on a per-instance basis via the "max-filters" devicetree
+	  property.
+
+	  CAN FD mode uses larger message buffers, resulting in fewer available filters.
+
+config CAN_FLEXCAN_ERRATA_5829
+	bool # hidden
+	default y if SOC_SERIES_IMXRT10XX
+	help
+	  Enable workaround for FlexCAN errata 5829.
+
+	  FlexCAN does not transmit a frame that is enabled to be transmitted at a specific moment
+	  during the arbitration process.
+
+config CAN_FLEXCAN_ERRATA_6032
+	bool # hidden
+	default y if SOC_SERIES_IMXRT10XX
+	help
+	  Enable workaround for FlexCAN errata 6032.
+
+	  A frame with a wrong ID or payload is transmitted into the CAN bus when the message buffer
+	  under transmission is either aborted or deactivated while the CAN bus is in the bus idle
+	  state.
+
+config CAN_FLEXCAN_ERRATA_9595
+	bool # hidden
+	default y if SOC_SERIES_IMXRT10XX
+	help
+	  Enable workaround for FlexCAN errata 9595.
+
+	  Corrupt frame possible if freeze mode or low-power mode is entered during a bus-off state.
+
+endif # CAN_FLEXCAN
