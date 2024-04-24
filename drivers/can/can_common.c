@@ -56,6 +56,12 @@ int z_impl_can_send(const struct device *dev, const struct can_frame *frame,
 		return -EINVAL;
 	}
 
+	CHECKIF((frame->flags & (CAN_FRAME_RTR | CAN_FRAME_FDF)) ==
+		(CAN_FRAME_RTR | CAN_FRAME_FDF)) {
+		LOG_ERR("invalid frame flags 0x%02x", frame->flags);
+		return -EINVAL;
+	}
+
 	if (callback == NULL) {
 		struct can_tx_default_cb_ctx ctx;
 		int err;
