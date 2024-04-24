@@ -203,6 +203,22 @@ const struct can_filter test_std_some_filter = {
 };
 
 /**
+ * @brief Test sending an invalid CAN frame.
+ *
+ * @param dev   Pointer to the device structure for the driver instance.
+ * @param frame Pointer to the CAN frame to send.
+ */
+void send_invalid_frame(const struct device *dev, const struct can_frame *frame)
+{
+	int err;
+
+	Z_TEST_SKIP_IFNDEF(CONFIG_RUNTIME_ERROR_CHECKS);
+
+	err = can_send(dev, frame, TEST_SEND_TIMEOUT, NULL, NULL);
+	zassert_equal(err, -EINVAL, "wrong error on sending invalid frame (err %d)", err);
+}
+
+/**
  * @brief Assert that two CAN frames are equal given a CAN ID mask.
  *
  * @param frame1  First CAN frame.

@@ -154,6 +154,14 @@ extern const struct can_filter test_ext_masked_filter_2;
 extern const struct can_filter test_std_some_filter;
 
 /**
+ * @brief Test sending an invalid CAN frame.
+ *
+ * @param dev   Pointer to the device structure for the driver instance.
+ * @param frame Pointer to the CAN frame to send.
+ */
+void send_invalid_frame(const struct device *dev, const struct can_frame *frame);
+
+/**
  * @brief Assert that two CAN frames are equal given a CAN ID mask.
  *
  * @param frame1  First CAN frame.

@@ -761,22 +761,6 @@ ZTEST(can_classic, test_send_callback)
 }
 
 /**
- * @brief Test sending an invalid CAN frame.
- *
- * @param dev   Pointer to the device structure for the driver instance.
- * @param frame Pointer to the CAN frame to send.
- */
-static void send_invalid_frame(const struct device *dev, const struct can_frame *frame)
-{
-	int err;
-
-	Z_TEST_SKIP_IFNDEF(CONFIG_RUNTIME_ERROR_CHECKS);
-
-	err = can_send(dev, frame, TEST_SEND_TIMEOUT, NULL, NULL);
-	zassert_equal(err, -EINVAL, "wrong error on sending invalid frame (err %d)", err);
-}
-
-/**
  * @brief Test sending NULL frame.
  */
 ZTEST(can_classic, test_send_null_frame)
