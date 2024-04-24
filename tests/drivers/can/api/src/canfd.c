@@ -266,6 +266,19 @@ ZTEST(canfd, test_send_receive_mixed)
 }
 
 /**
+ * @brief Test sending frame with invalid CAN FD flags.
+ */
+ZTEST(canfd, test_send_invalid_can_fd_frame)
+{
+	struct can_frame frame = {
+		.flags = CAN_FRAME_RTR | CAN_FRAME_FDF,
+		.id = CAN_STD_ID_MASK,
+	};
+
+	send_invalid_frame(can_dev, &frame);
+}
+
+/**
  * @brief Test that CAN RX filters are preserved through CAN controller mode changes.
  */
 static void check_filters_preserved_between_modes(can_mode_t first, can_mode_t second)
