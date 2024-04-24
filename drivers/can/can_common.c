@@ -36,6 +36,7 @@ int z_impl_can_send(const struct device *dev, const struct can_frame *frame,
 		    void *user_data)
 {
 	const struct can_driver_api *api = (const struct can_driver_api *)dev->api;
+	uint8_t max_dlc = CAN_MAX_DLC;
 	uint32_t id_mask;
 
 	CHECKIF(frame == NULL) {
@@ -59,6 +60,15 @@ int z_impl_can_send(const struct device *dev, const struct can_frame *frame,
 	CHECKIF((frame->flags & (CAN_FRAME_RTR | CAN_FRAME_FDF)) ==
 		(CAN_FRAME_RTR | CAN_FRAME_FDF)) {
 		LOG_ERR("invalid frame flags 0x%02x", frame->flags);
+		return -EINVAL;
+	}
+
+	if (IS_ENABLED(CONFIG_CAN_FD_MODE) && (frame->flags & CAN_FRAME_FDF) != 0U) {
+		max_dlc = CANFD_MAX_DLC;
+	}
+
+	CHECKIF(frame->dlc > max_dlc) {
+		LOG_ERR("invalid frame DLC %u", frame->dlc);
 		return -EINVAL;
 	}
 
