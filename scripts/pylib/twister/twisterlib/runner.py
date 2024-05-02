@@ -369,6 +369,16 @@ class CMake:
         cmake_opts = ['-DBOARD={}'.format(self.platform.name)]
         cmake_args.extend(cmake_opts)
 
+        if self.instance.handler.type_str == "device":
+            nop
+            # TODO: How to access the hwm.shields[] here?
+            #
+            # Problem: Twister builds one firmware image per "platform", not one firmware image per
+            # DUT in the hwm, and selects an available, matching platform for running.
+            #
+            # This makes it difficult to add different shields to some instances of otherwise
+            # identical platforms in the hwm.
+
         if self.instance.testsuite.required_snippets:
             cmake_opts = ['-DSNIPPET={}'.format(';'.join(self.instance.testsuite.required_snippets))]
             cmake_args.extend(cmake_opts)

@@ -55,6 +55,11 @@ sequence:
         required: false
         sequence:
           - type: str
+      "shields":
+        type: seq
+        required: false
+        sequence:
+          - type: str
       "flash_timeout":
         type: int
         required: false
