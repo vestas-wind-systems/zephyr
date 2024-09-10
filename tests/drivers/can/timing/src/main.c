@@ -29,6 +29,11 @@ struct can_timing_test {
 	uint32_t bitrate;
 	/** Desired sample point in permille */
 	uint16_t sp;
+	/**
+	 * Only test this bitrate if the CAN core clock frequency is 80 MHz or
+	 * CONFIG_TEST_ALL_BITRATES is enabled.
+	 */
+	bool extended;
 };
 
 /**
@@ -36,16 +41,14 @@ struct can_timing_test {
  */
 static const struct can_timing_test can_timing_tests[] = {
 	/* CiA 301 recommended bitrates */
-#ifdef CONFIG_TEST_ALL_BITRATES
-	{   10000, 875 },
-#endif /* CONFIG_TEST_ALL_BITRATES */
-	{   20000, 875 },
-	{   50000, 875 },
-	{  125000, 875 },
-	{  250000, 875 },
-	{  500000, 875 },
-	{  800000, 800 },
-	{ 1000000, 750 },
+	{   10000, 875, true },
+	{   20000, 875, false },
+	{   50000, 875, false },
+	{  125000, 875, false },
+	{  250000, 875, false },
+	{  500000, 875, false },
+	{  800000, 800, false },
+	{ 1000000, 750, false },
 };
 
 /**
@@ -53,13 +56,11 @@ static const struct can_timing_test can_timing_tests[] = {
  */
 static const struct can_timing_test can_timing_data_tests[] = {
 	/* CiA 601-2 recommended data phase bitrates */
-	{ 1000000, 750 },
-#ifdef CONFIG_TEST_ALL_BITRATES
-	{ 2000000, 750 },
-	{ 4000000, 750 },
-	{ 5000000, 750 },
-	{ 8000000, 750 },
-#endif /* CONFIG_TEST_ALL_BITRATES */
+	{ 1000000, 750, false },
+	{ 2000000, 750, true },
+	{ 4000000, 750, true },
+	{ 5000000, 750, true },
+	{ 8000000, 750, true },
 };
 
 /**
@@ -152,10 +153,19 @@ static bool test_timing_values(const struct device *dev, const struct can_timing
 	const struct can_timing *min = NULL;
 	struct can_timing timing = { 0 };
 	int sp_err = -EINVAL;
+	uint32_t core_clock;
 	int err;
 
 	printk("testing bitrate %u, sample point %u.%u%%: ",
 	       test->bitrate, test->sp / 10, test->sp % 10);
+
+	err = can_get_core_clock(dev, &core_clock);
+	zassert_equal(err, 0, "failed to get core CAN clock");
+
+	if (!IS_ENABLED(CONFIG_TEST_ALL_BITRATES) && core_clock != MHZ(80)) {
+		printk("skipped\n");
+		return false;
+	}
 
 	if (data_phase) {
 		if (IS_ENABLED(CONFIG_CAN_FD_MODE)) {
@@ -281,9 +291,9 @@ void *can_timing_setup(void)
 		}
 	}
 
-	if (!IS_ENABLED(CONFIG_TEST_ALL_BITRATES)) {
-		TC_PRINT("Warning: Testing limited selection of bitrates "
-			 "(CONFIG_TEST_ALL_BITRATES=n)\n");
+	if (IS_ENABLED(CONFIG_TEST_ALL_BITRATES) && core_clock != MHZ(80)) {
+		TC_PRINT("Warning: Testing all bitrates with CAN core clock of %u Hz "
+			 "(CONFIG_TEST_ALL_BITRATES=y)\n", core_clock);
 	}
 
 	return NULL;
