@@ -1,0 +1,6 @@
+common:
+  tags:
+    - sys_buf
+tests:
+  libraries.sys_buf.buf_simple:
+    type: unit

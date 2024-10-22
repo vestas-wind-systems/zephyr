@@ -2,7 +2,7 @@
 
 zephyr_library()
 zephyr_library_sources_ifdef(
-  CONFIG_NET_BUF
+  CONFIG_SYS_BUF
   buf.c
   buf_simple.c
   )

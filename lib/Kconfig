@@ -15,7 +15,7 @@ source "lib/heap/Kconfig"
 
 source "lib/mem_blocks/Kconfig"
 
-source "lib/net_buf/Kconfig"
+source "lib/sys_buf/Kconfig"
 
 source "lib/os/Kconfig"
 

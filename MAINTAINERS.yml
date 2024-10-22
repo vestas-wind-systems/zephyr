@@ -2852,7 +2852,7 @@ Networking:
   tests:
     - net.socket
 
-"Networking Buffers":
+"System Buffers":
   status: maintained
   maintainers:
     - jhedberg
@@ -2861,15 +2861,16 @@ Networking:
     - tbursztyka
     - jukkar
   files:
-    - doc/services/net_buf/
+    - doc/services/sys_buf/
     - include/zephyr/net/buf.h
     - include/zephyr/net_buf.h
-    - lib/net_buf/
-    - tests/lib/net_buf/
+    - include/zephyr/sys/buf.h
+    - lib/sys_buf/
+    - tests/lib/sys_buf/
   labels:
-    - "area: Networking Buffers"
+    - "area: System Buffers"
   tests:
-    - libraries.net_buf
+    - libraries.sys_buf
 
 "Networking: Connection Manager":
   status: maintained

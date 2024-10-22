@@ -1,0 +1,5 @@
+tests:
+  libraries.sys_buf.buf:
+    min_ram: 16
+    tags:
+      - sys_buf

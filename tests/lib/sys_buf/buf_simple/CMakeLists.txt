@@ -14,5 +14,5 @@ target_sources(testbinary
     PRIVATE
     src/main.c
 
-    ${ZEPHYR_BASE}/lib/net_buf/buf_simple.c
+    ${ZEPHYR_BASE}/lib/sys_buf/buf_simple.c
 )
