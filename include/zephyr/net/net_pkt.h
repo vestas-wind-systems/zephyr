@@ -147,7 +147,7 @@ struct net_pkt {
 	/** Allow placing the packet into sys_slist_t */
 	sys_snode_t next;
 #endif
-#if defined(CONFIG_NET_ROUTING) || defined(CONFIG_NET_ETHERNET_BRIDGE)
+#if defined(CONFIG_NET_IPV6_ROUTING) || defined(CONFIG_NET_ETHERNET_BRIDGE)
 	struct net_if *orig_iface; /* Original network interface */
 #endif
 
@@ -231,7 +231,7 @@ struct net_pkt {
 				  * Used only if defined (CONFIG_NET_L2_PTP)
 				  */
 	uint8_t forwarding : 1;	 /* Are we forwarding this pkt
-				  * Used only if defined(CONFIG_NET_ROUTE)
+				  * Used only if defined(CONFIG_NET_IPV6_ROUTE)
 				  */
 	uint8_t family : 3;	 /* Address family, see net_ip.h */
 
@@ -434,7 +434,7 @@ static inline void net_pkt_set_iface(struct net_pkt *pkt, struct net_if *iface)
 
 static inline struct net_if *net_pkt_orig_iface(struct net_pkt *pkt)
 {
-#if defined(CONFIG_NET_ROUTING) || defined(CONFIG_NET_ETHERNET_BRIDGE)
+#if defined(CONFIG_NET_IPV6_ROUTING) || defined(CONFIG_NET_ETHERNET_BRIDGE)
 	return pkt->orig_iface;
 #else
 	return pkt->iface;
@@ -444,7 +444,7 @@ static inline struct net_if *net_pkt_orig_iface(struct net_pkt *pkt)
 static inline void net_pkt_set_orig_iface(struct net_pkt *pkt,
 					  struct net_if *iface)
 {
-#if defined(CONFIG_NET_ROUTING) || defined(CONFIG_NET_ETHERNET_BRIDGE)
+#if defined(CONFIG_NET_IPV6_ROUTING) || defined(CONFIG_NET_ETHERNET_BRIDGE)
 	pkt->orig_iface = iface;
 #else
 	ARG_UNUSED(pkt);
