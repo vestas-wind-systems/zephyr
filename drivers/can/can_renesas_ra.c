@@ -154,7 +154,7 @@ struct can_renesas_ra_filter {
 };
 
 struct can_renesas_ra_cfg {
-	struct can_driver_config common;
+	struct can_priv_driver_config common;
 	const struct pinctrl_dev_config *pcfg;
 	const struct device *global_dev;
 	const struct device *dll_clk;
@@ -163,7 +163,7 @@ struct can_renesas_ra_cfg {
 };
 
 struct can_renesas_ra_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	struct k_mutex inst_mutex;
 	const struct device *dev;
 	can_instance_t fsp_can;
@@ -1156,7 +1156,7 @@ DEVICE_DT_DEFINE(DT_COMPAT_GET_ANY_STATUS_OKAY(renesas_ra_canfd_global), can_ren
 		CAN_RENESAS_RA_CHANNEL_IRQ_INIT(index)                                             \
 		return can_renesas_ra_init(dev);                                                   \
 	}                                                                                          \
-	CAN_DEVICE_DT_INST_DEFINE(index, can_renesas_ra_init##index, NULL,                         \
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(index, can_renesas_ra_init##index, NULL,                    \
 				  &can_renesas_ra_data##index, &can_renesas_ra_cfg##index,         \
 				  POST_KERNEL, CONFIG_CAN_INIT_PRIORITY,                           \
 				  &can_renesas_ra_driver_api);

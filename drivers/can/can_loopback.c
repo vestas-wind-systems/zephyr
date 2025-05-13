@@ -30,11 +30,11 @@ struct can_loopback_filter {
 };
 
 struct can_loopback_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 };
 
 struct can_loopback_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	struct can_loopback_filter filters[CONFIG_CAN_MAX_FILTER];
 	struct k_mutex mtx;
 	struct k_msgq tx_msgq;
@@ -455,7 +455,7 @@ static int can_loopback_init(const struct device *dev)
 												\
 	static struct can_loopback_data can_loopback_data_##inst;				\
 												\
-	CAN_DEVICE_DT_INST_DEFINE(inst, can_loopback_init, NULL,				\
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, can_loopback_init, NULL,				\
 				  &can_loopback_data_##inst,					\
 				  &can_loopback_config_##inst,					\
 				  POST_KERNEL, CONFIG_CAN_INIT_PRIORITY,			\

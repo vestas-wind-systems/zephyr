@@ -31,7 +31,7 @@ struct can_filter_context {
 };
 
 struct can_native_linux_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	struct can_filter_context filters[CONFIG_CAN_MAX_FILTER];
 	struct k_mutex filter_mutex;
 	struct k_sem tx_idle;
@@ -44,7 +44,7 @@ struct can_native_linux_data {
 };
 
 struct can_native_linux_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	const char *if_name;
 };
 
@@ -487,7 +487,7 @@ static const struct can_native_linux_config can_native_linux_cfg_##inst = {	\
 										\
 static struct can_native_linux_data can_native_linux_data_##inst;		\
 										\
-CAN_DEVICE_DT_INST_DEFINE(inst, can_native_linux_init, NULL,			\
+CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, can_native_linux_init, NULL,			\
 			  &can_native_linux_data_##inst,			\
 			  &can_native_linux_cfg_##inst,				\
 			  POST_KERNEL, CONFIG_CAN_INIT_PRIORITY,		\

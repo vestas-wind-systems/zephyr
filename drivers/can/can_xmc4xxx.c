@@ -56,7 +56,7 @@ struct can_xmc4xxx_rx_fifo {
 };
 
 struct can_xmc4xxx_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 
 	enum can_state state;
 	struct k_mutex mutex;
@@ -75,7 +75,7 @@ struct can_xmc4xxx_data {
 };
 
 struct can_xmc4xxx_config {
-	struct can_driver_config common;
+	struct can_priv_driver_config common;
 
 	CAN_NODE_TypeDef *can;
 	bool clock_div8;
@@ -932,7 +932,7 @@ static DEVICE_API(can, can_xmc4xxx_api_funcs) = {
 		.pcfg = PINCTRL_DT_INST_DEV_CONFIG_GET(inst),                                      \
 	};                                                                                         \
                                                                                                    \
-	CAN_DEVICE_DT_INST_DEFINE(inst, can_xmc4xxx_init, NULL, &can_xmc4xxx_data_##inst,          \
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, can_xmc4xxx_init, NULL, &can_xmc4xxx_data_##inst,     \
 				  &can_xmc4xxx_config_##inst, POST_KERNEL,                         \
 				  CONFIG_CAN_INIT_PRIORITY, &can_xmc4xxx_api_funcs);
 

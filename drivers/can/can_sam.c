@@ -194,7 +194,7 @@ static void config_can_##inst##_irq(void)                                       
 		CAN_MCAN_DATA_INITIALIZER(NULL);
 
 #define CAN_SAM_DEVICE_INST(inst)						\
-	CAN_DEVICE_DT_INST_DEFINE(inst, can_sam_init, NULL,			\
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, can_sam_init, NULL,			\
 				  &can_mcan_data_##inst,			\
 				  &can_mcan_cfg_##inst,				\
 				  POST_KERNEL, CONFIG_CAN_INIT_PRIORITY,	\

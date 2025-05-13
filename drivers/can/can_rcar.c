@@ -166,7 +166,7 @@ LOG_MODULE_REGISTER(can_rcar, CONFIG_CAN_LOG_LEVEL);
 typedef void (*init_func_t)(const struct device *dev);
 
 struct can_rcar_cfg {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	uint32_t reg_addr;
 	int reg_size;
 	init_func_t init_func;
@@ -182,7 +182,7 @@ struct can_rcar_tx_cb {
 };
 
 struct can_rcar_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	struct k_mutex inst_mutex;
 	struct k_sem tx_sem;
 	struct can_rcar_tx_cb tx_cb[RCAR_CAN_FIFO_DEPTH];
@@ -1205,7 +1205,7 @@ static DEVICE_API(can, can_rcar_driver_api) = {
 	};									\
 	static struct can_rcar_data can_rcar_data_##n;				\
 										\
-	CAN_DEVICE_DT_INST_DEFINE(n, can_rcar_init,				\
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(n, can_rcar_init,				\
 				  NULL,						\
 				  &can_rcar_data_##n,				\
 				  &can_rcar_cfg_##n,				\

@@ -48,7 +48,7 @@ struct can_stm32_mailbox {
 };
 
 struct can_stm32_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	struct k_mutex inst_mutex;
 	struct k_sem tx_int_sem;
 	struct can_stm32_mailbox mb0;
@@ -62,7 +62,7 @@ struct can_stm32_data {
 };
 
 struct can_stm32_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	CAN_TypeDef *can;   /*!< CAN Registers*/
 	CAN_TypeDef *master_can;   /*!< CAN Registers for shared filter */
 	struct stm32_pclken pclken;
@@ -1161,7 +1161,7 @@ static const struct can_stm32_config can_stm32_cfg_##inst = {            \
 static struct can_stm32_data can_stm32_dev_data_##inst;
 
 #define CAN_STM32_DEFINE_INST(inst)                                      \
-CAN_DEVICE_DT_INST_DEFINE(inst, can_stm32_init, NULL,                    \
+CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, can_stm32_init, NULL,                    \
 			  &can_stm32_dev_data_##inst, &can_stm32_cfg_##inst, \
 			  POST_KERNEL, CONFIG_CAN_INIT_PRIORITY,         \
 			  &can_api_funcs);

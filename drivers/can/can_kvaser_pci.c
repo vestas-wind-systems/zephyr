@@ -175,7 +175,7 @@ DEVICE_API(can, can_kvaser_pci_driver_api) = {
 	static struct can_sja1000_data can_sja1000_data_##inst =                                   \
 		CAN_SJA1000_DATA_INITIALIZER(&can_kvaser_pci_data_##inst);                         \
                                                                                                    \
-	CAN_DEVICE_DT_INST_DEFINE(inst, can_kvaser_pci_init, NULL, &can_sja1000_data_##inst,       \
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, can_kvaser_pci_init, NULL, &can_sja1000_data_##inst,  \
 				  &can_sja1000_config_##inst, POST_KERNEL,                         \
 				  CONFIG_CAN_INIT_PRIORITY, &can_kvaser_pci_driver_api);           \
                                                                                                    \

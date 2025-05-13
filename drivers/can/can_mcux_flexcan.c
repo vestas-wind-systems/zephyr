@@ -68,7 +68,7 @@ LOG_MODULE_REGISTER(can_mcux_flexcan, CONFIG_CAN_LOG_LEVEL);
 	>> CAN_ID_EXT_SHIFT))
 
 struct mcux_flexcan_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	CAN_Type *base;
 	const struct device *clock_dev;
 	clock_control_subsys_t clock_subsys;
@@ -100,7 +100,7 @@ struct mcux_flexcan_tx_callback {
 };
 
 struct mcux_flexcan_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	const struct device *dev;
 	flexcan_handle_t handle;
 
@@ -309,7 +309,8 @@ static int mcux_flexcan_start(const struct device *dev)
 		FLEXCAN_EnterFreezeMode(config->base);
 		config->base->FDCTRL &= ~(CAN_FDCTRL_TDCOFF_MASK);
 		config->base->FDCTRL |= FIELD_PREP(CAN_FDCTRL_TDCOFF_MASK,
-						   CAN_CALC_TDCO((&data->timing_data), 1U, 31U));
+						   CAN_PRIV_CALC_TDCO((&data->timing_data), 1U,
+								      31U));
 		FLEXCAN_ExitFreezeMode(config->base);
 	}
 #endif /* CONFIG_CAN_MCUX_FLEXCAN_FD */
@@ -1419,7 +1420,7 @@ static DEVICE_API(can, mcux_flexcan_fd_driver_api) = {
 									\
 	static struct mcux_flexcan_data mcux_flexcan_data_##id;		\
 									\
-	CAN_DEVICE_DT_INST_DEFINE(id, mcux_flexcan_init,		\
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(id, mcux_flexcan_init,		\
 				  NULL, &mcux_flexcan_data_##id,	\
 				  &mcux_flexcan_config_##id,		\
 				  POST_KERNEL, CONFIG_CAN_INIT_PRIORITY,\

@@ -61,6 +61,7 @@ extern "C" {
  */
 #define CANFD_MAX_DLC   15U
 
+/* TODO: should this be hidden at all? */
 /**
  * @cond INTERNAL_HIDDEN
  * Internally calculated maximum data length
@@ -305,6 +306,7 @@ typedef void (*can_state_change_callback_t)(const struct device *dev,
 					    struct can_bus_err_cnt err_cnt,
 					    void *user_data);
 
+/* TODO: should @cond be removed here? */
 /**
  * @cond INTERNAL_HIDDEN
  *
@@ -324,7 +326,7 @@ typedef void (*can_state_change_callback_t)(const struct device *dev,
  * @param _tdco_max    Maximum supported TDC Offset value in mtq.
  * @return             Calculated TDC Offset value in mtq.
  */
-#define CAN_CALC_TDCO(_timing_data, _tdco_min, _tdco_max)                                          \
+#define CAN_PRIV_CALC_TDCO(_timing_data, _tdco_min, _tdco_max)                                     \
 	CLAMP((1U + _timing_data->prop_seg + _timing_data->phase_seg1) * _timing_data->prescaler,  \
 	      _tdco_min, _tdco_max)
 
@@ -334,7 +336,7 @@ typedef void (*can_state_change_callback_t)(const struct device *dev,
  * This structure is common to all CAN controller drivers and is expected to be the first element in
  * the object pointed to by the config field in the device structure.
  */
-struct can_driver_config {
+struct can_priv_driver_config {
 	/** Pointer to the device structure for the associated CAN transceiver device or NULL. */
 	const struct device *phy;
 	/** The minimum bitrate supported by the CAN controller/transceiver combination. */
@@ -354,13 +356,13 @@ struct can_driver_config {
 };
 
 /**
- * @brief Static initializer for @p can_driver_config struct
+ * @brief Static initializer for @p can_priv_driver_config struct
  *
  * @param node_id Devicetree node identifier
  * @param _min_bitrate minimum bitrate supported by the CAN controller
  * @param _max_bitrate maximum bitrate supported by the CAN controller
  */
-#define CAN_DT_DRIVER_CONFIG_GET(node_id, _min_bitrate, _max_bitrate)				\
+#define CAN_PRIV_DT_DRIVER_CONFIG_GET(node_id, _min_bitrate, _max_bitrate)			\
 	{											\
 		.phy = DEVICE_DT_GET_OR_NULL(DT_PHANDLE(node_id, phys)),			\
 		.min_bitrate = DT_CAN_TRANSCEIVER_MIN_BITRATE(node_id, _min_bitrate),		\
@@ -375,15 +377,15 @@ struct can_driver_config {
 	}
 
 /**
- * @brief Static initializer for @p can_driver_config struct from DT_DRV_COMPAT instance
+ * @brief Static initializer for @p can_priv_driver_config struct from DT_DRV_COMPAT instance
  *
  * @param inst DT_DRV_COMPAT instance number
  * @param _min_bitrate minimum bitrate supported by the CAN controller
  * @param _max_bitrate maximum bitrate supported by the CAN controller
- * @see CAN_DT_DRIVER_CONFIG_GET()
+ * @see CAN_PRIV_DT_DRIVER_CONFIG_GET()
  */
-#define CAN_DT_DRIVER_CONFIG_INST_GET(inst, _min_bitrate, _max_bitrate)				\
-	CAN_DT_DRIVER_CONFIG_GET(DT_DRV_INST(inst), _min_bitrate, _max_bitrate)
+#define CAN_PRIV_DT_DRIVER_CONFIG_INST_GET(inst, _min_bitrate, _max_bitrate)			\
+	CAN_PRIV_DT_DRIVER_CONFIG_GET(DT_DRV_INST(inst), _min_bitrate, _max_bitrate)
 
 /**
  * @brief Common CAN controller driver data.
@@ -391,7 +393,7 @@ struct can_driver_config {
  * This structure is common to all CAN controller drivers and is expected to be the first element in
  * the driver's struct driver_data declaration.
  */
-struct can_driver_data {
+struct can_priv_driver_data {
 	/** Current CAN controller mode. */
 	can_mode_t mode;
 	/** True if the CAN controller is started, false otherwise. */
@@ -500,6 +502,7 @@ typedef int (*can_get_core_clock_t)(const struct device *dev, uint32_t *rate);
  */
 typedef int (*can_get_max_filters_t)(const struct device *dev, bool ide);
 
+/* TODO: are driver subsystem callbacks and structures private to the subsystem? */
 __subsystem struct can_driver_api {
 	can_get_capabilities_t get_capabilities;
 	can_start_t start;
@@ -565,7 +568,7 @@ STATS_NAME_END(can);
  * @brief CAN specific device state which allows for CAN device class specific
  * additions
  */
-struct can_device_state {
+struct can_priv_device_state {
 	/** Common device state. */
 	struct device_state devstate;
 	/** CAN device statistics */
@@ -577,11 +580,12 @@ struct can_device_state {
 /**
  * @brief Get pointer to CAN statistics structure
  */
-#define Z_CAN_GET_STATS(dev_)				\
-	CONTAINER_OF(dev_->state, struct can_device_state, devstate)->stats
+#define CAN_PRIV_GET_STATS(dev_)			\
+	CONTAINER_OF(dev_->state, struct can_priv_device_state, devstate)->stats
 
 /** @endcond */
 
+/* TODO: should these macros be private? only used from within CAN drivers. */
 /**
  * @brief Increment the bit error counter for a CAN device
  *
@@ -599,7 +603,7 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_BIT_ERROR_INC(dev_)                  \
-	STATS_INC(Z_CAN_GET_STATS(dev_), bit_error)
+	STATS_INC(CAN_PRIV_GET_STATS(dev_), bit_error)
 
 /**
  * @brief Increment the bit0 error counter for a CAN device
@@ -614,7 +618,7 @@ struct can_device_state {
  */
 #define CAN_STATS_BIT0_ERROR_INC(dev_)				\
 	do {							\
-		STATS_INC(Z_CAN_GET_STATS(dev_), bit0_error);	\
+		STATS_INC(CAN_PRIV_GET_STATS(dev_), bit0_error);\
 		CAN_STATS_BIT_ERROR_INC(dev_);			\
 	} while (0)
 
@@ -631,7 +635,7 @@ struct can_device_state {
  */
 #define CAN_STATS_BIT1_ERROR_INC(dev_)				\
 	do {							\
-		STATS_INC(Z_CAN_GET_STATS(dev_), bit1_error);	\
+		STATS_INC(CAN_PRIV_GET_STATS(dev_), bit1_error);\
 		CAN_STATS_BIT_ERROR_INC(dev_);			\
 	} while (0)
 
@@ -644,7 +648,7 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_STUFF_ERROR_INC(dev_)			\
-	STATS_INC(Z_CAN_GET_STATS(dev_), stuff_error)
+	STATS_INC(CAN_PRIV_GET_STATS(dev_), stuff_error)
 
 /**
  * @brief Increment the CRC error counter for a CAN device
@@ -655,7 +659,7 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_CRC_ERROR_INC(dev_)			\
-	STATS_INC(Z_CAN_GET_STATS(dev_), crc_error)
+	STATS_INC(CAN_PRIV_GET_STATS(dev_), crc_error)
 
 /**
  * @brief Increment the form error counter for a CAN device
@@ -666,7 +670,7 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_FORM_ERROR_INC(dev_)			\
-	STATS_INC(Z_CAN_GET_STATS(dev_), form_error)
+	STATS_INC(CAN_PRIV_GET_STATS(dev_), form_error)
 
 /**
  * @brief Increment the acknowledge error counter for a CAN device
@@ -677,7 +681,7 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_ACK_ERROR_INC(dev_)			\
-	STATS_INC(Z_CAN_GET_STATS(dev_), ack_error)
+	STATS_INC(CAN_PRIV_GET_STATS(dev_), ack_error)
 
 /**
  * @brief Increment the RX overrun counter for a CAN device
@@ -689,7 +693,7 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_RX_OVERRUN_INC(dev_)			\
-	STATS_INC(Z_CAN_GET_STATS(dev_), rx_overrun)
+	STATS_INC(CAN_PRIV_GET_STATS(dev_), rx_overrun)
 
 /**
  * @brief Zero all statistics for a CAN device
@@ -700,15 +704,13 @@ struct can_device_state {
  * @param dev_ Pointer to the device structure for the driver instance.
  */
 #define CAN_STATS_RESET(dev_)				\
-	stats_reset(&(Z_CAN_GET_STATS(dev_).s_hdr))
-
-/** @cond INTERNAL_HIDDEN */
+	stats_reset(&(CAN_PRIV_GET_STATS(dev_).s_hdr))
 
 /**
  * @brief Define a statically allocated and section assigned CAN device state
  */
-#define Z_CAN_DEVICE_STATE_DEFINE(dev_id)				\
-	static struct can_device_state Z_DEVICE_STATE_NAME(dev_id)	\
+#define CAN_PRIV_DEVICE_STATE_DEFINE(dev_id)				\
+	static struct can_priv_device_state Z_DEVICE_STATE_NAME(dev_id)	\
 	__attribute__((__section__(".z_devstate")))
 
 /**
@@ -717,11 +719,11 @@ struct can_device_state {
  * This does device instance specific initialization of common data (such as stats)
  * and calls the given init_fn
  */
-#define Z_CAN_INIT_FN(dev_id, init_fn)					\
+#define CAN_PRIV_INIT_FN(dev_id, init_fn)				\
 	static inline int UTIL_CAT(dev_id, _init)(const struct device *dev) \
 	{								\
-		struct can_device_state *state =			\
-			CONTAINER_OF(dev->state, struct can_device_state, devstate); \
+		struct can_priv_device_state *state =			\
+			CONTAINER_OF(dev->state, struct can_priv_device_state, devstate); \
 		stats_init(&state->stats.s_hdr, STATS_SIZE_32, 8,	\
 			   STATS_NAME_INIT_PARMS(can));			\
 		stats_register(dev->name, &(state->stats.s_hdr));	\
@@ -731,8 +733,6 @@ struct can_device_state {
 									\
 		return 0;						\
 	}
-
-/** @endcond */
 
 /**
  * @brief Like DEVICE_DT_DEFINE() with CAN device specifics.
@@ -754,15 +754,15 @@ struct can_device_state {
  * @param api       Provides an initial pointer to the API function struct
  *                  used by the driver. Can be NULL.
  */
-#define CAN_DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,	\
-			     prio, api, ...)				\
-	Z_CAN_DEVICE_STATE_DEFINE(Z_DEVICE_DT_DEV_ID(node_id));		\
-	Z_CAN_INIT_FN(Z_DEVICE_DT_DEV_ID(node_id), init_fn)		\
-	Z_DEVICE_DEFINE(node_id, Z_DEVICE_DT_DEV_ID(node_id),		\
-			DEVICE_DT_NAME(node_id),			\
-			&UTIL_CAT(Z_DEVICE_DT_DEV_ID(node_id), _init),	\
-			NULL, Z_DEVICE_DT_FLAGS(node_id), pm, data,	\
-			config,	level, prio, api,			\
+#define CAN_PRIV_DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,	\
+			     prio, api, ...)					\
+	CAN_PRIV_DEVICE_STATE_DEFINE(Z_DEVICE_DT_DEV_ID(node_id));		\
+	CAN_PRIV_INIT_FN(Z_DEVICE_DT_DEV_ID(node_id), init_fn)			\
+	Z_DEVICE_DEFINE(node_id, Z_DEVICE_DT_DEV_ID(node_id),			\
+			DEVICE_DT_NAME(node_id),				\
+			&UTIL_CAT(Z_DEVICE_DT_DEV_ID(node_id), _init),		\
+			NULL, Z_DEVICE_DT_FLAGS(node_id), pm, data,		\
+			config,	level, prio, api,				\
 			&(Z_DEVICE_STATE_NAME(Z_DEVICE_DT_DEV_ID(node_id)).devstate), \
 			__VA_ARGS__)
 
@@ -778,22 +778,22 @@ struct can_device_state {
 #define CAN_STATS_RX_OVERRUN_INC(dev_)
 #define CAN_STATS_RESET(dev_)
 
-#define CAN_DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,	\
-			     prio, api, ...)				\
-	DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,	\
+#define CAN_PRIV_DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,	\
+			     prio, api, ...)					\
+	DEVICE_DT_DEFINE(node_id, init_fn, pm, data, config, level,		\
 			 prio, api, __VA_ARGS__)
 
 #endif /* CONFIG_CAN_STATS */
 
 /**
- * @brief Like CAN_DEVICE_DT_DEFINE() for an instance of a DT_DRV_COMPAT compatible
+ * @brief Like CAN_PRIV_DEVICE_DT_DEFINE() for an instance of a DT_DRV_COMPAT compatible
  *
  * @param inst Instance number. This is replaced by <tt>DT_DRV_COMPAT(inst)</tt>
- *             in the call to CAN_DEVICE_DT_DEFINE().
- * @param ...  Other parameters as expected by CAN_DEVICE_DT_DEFINE().
+ *             in the call to CAN_PRIV_DEVICE_DT_DEFINE().
+ * @param ...  Other parameters as expected by CAN_PRIV_DEVICE_DT_DEFINE().
  */
-#define CAN_DEVICE_DT_INST_DEFINE(inst, ...)			\
-	CAN_DEVICE_DT_DEFINE(DT_DRV_INST(inst), __VA_ARGS__)
+#define CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, ...)			\
+	CAN_PRIV_DEVICE_DT_DEFINE(DT_DRV_INST(inst), __VA_ARGS__)
 
 /**
  * @name CAN controller configuration
@@ -842,7 +842,8 @@ __syscall uint32_t can_get_bitrate_min(const struct device *dev);
 
 static inline uint32_t z_impl_can_get_bitrate_min(const struct device *dev)
 {
-	const struct can_driver_config *common = (const struct can_driver_config *)dev->config;
+	const struct can_priv_driver_config *common =
+		(const struct can_priv_driver_config *)dev->config;
 
 	return common->min_bitrate;
 }
@@ -867,7 +868,8 @@ __syscall uint32_t can_get_bitrate_max(const struct device *dev);
 
 static inline uint32_t z_impl_can_get_bitrate_max(const struct device *dev)
 {
-	const struct can_driver_config *common = (const struct can_driver_config *)dev->config;
+	const struct can_priv_driver_config *common =
+		(const struct can_priv_driver_config *)dev->config;
 
 	return common->max_bitrate;
 }
@@ -1105,7 +1107,8 @@ __syscall const struct device *can_get_transceiver(const struct device *dev);
 
 static const struct device *z_impl_can_get_transceiver(const struct device *dev)
 {
-	const struct can_driver_config *common = (const struct can_driver_config *)dev->config;
+	const struct can_priv_driver_config *common =
+		(const struct can_priv_driver_config *)dev->config;
 
 	return common->phy;
 }
@@ -1190,7 +1193,7 @@ __syscall can_mode_t can_get_mode(const struct device *dev);
 
 static inline can_mode_t z_impl_can_get_mode(const struct device *dev)
 {
-	const struct can_driver_data *common = (const struct can_driver_data *)dev->data;
+	const struct can_priv_driver_data *common = (const struct can_priv_driver_data *)dev->data;
 
 	return common->mode;
 }
@@ -1509,7 +1512,7 @@ __syscall uint32_t can_stats_get_bit_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_bit_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).bit_error;
+	return CAN_PRIV_GET_STATS(dev).bit_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1532,7 +1535,7 @@ __syscall uint32_t can_stats_get_bit0_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_bit0_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).bit0_error;
+	return CAN_PRIV_GET_STATS(dev).bit0_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1555,7 +1558,7 @@ __syscall uint32_t can_stats_get_bit1_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_bit1_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).bit1_error;
+	return CAN_PRIV_GET_STATS(dev).bit1_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1576,7 +1579,7 @@ __syscall uint32_t can_stats_get_stuff_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_stuff_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).stuff_error;
+	return CAN_PRIV_GET_STATS(dev).stuff_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1597,7 +1600,7 @@ __syscall uint32_t can_stats_get_crc_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_crc_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).crc_error;
+	return CAN_PRIV_GET_STATS(dev).crc_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1618,7 +1621,7 @@ __syscall uint32_t can_stats_get_form_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_form_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).form_error;
+	return CAN_PRIV_GET_STATS(dev).form_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1639,7 +1642,7 @@ __syscall uint32_t can_stats_get_ack_errors(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_ack_errors(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).ack_error;
+	return CAN_PRIV_GET_STATS(dev).ack_error;
 }
 #endif /* CONFIG_CAN_STATS */
 
@@ -1661,7 +1664,7 @@ __syscall uint32_t can_stats_get_rx_overruns(const struct device *dev);
 #ifdef CONFIG_CAN_STATS
 static inline uint32_t z_impl_can_stats_get_rx_overruns(const struct device *dev)
 {
-	return Z_CAN_GET_STATS(dev).rx_overrun;
+	return CAN_PRIV_GET_STATS(dev).rx_overrun;
 }
 #endif /* CONFIG_CAN_STATS */
 

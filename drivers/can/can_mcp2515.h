@@ -22,7 +22,7 @@ struct mcp2515_tx_cb {
 };
 
 struct mcp2515_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 
 	/* interrupt data */
 	struct gpio_callback int_gpio_cb;
@@ -48,7 +48,7 @@ struct mcp2515_data {
 };
 
 struct mcp2515_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 
 	/* spi configuration */
 	struct spi_dt_spec bus;

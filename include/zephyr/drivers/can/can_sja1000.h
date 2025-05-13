@@ -102,7 +102,7 @@ typedef uint8_t (*can_sja1000_read_reg_t)(const struct device *dev, uint8_t reg)
  * @brief SJA1000 driver internal configuration structure.
  */
 struct can_sja1000_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	can_sja1000_read_reg_t read_reg;
 	can_sja1000_write_reg_t write_reg;
 	uint8_t ocr;
@@ -124,7 +124,7 @@ struct can_sja1000_config {
 #define CAN_SJA1000_DT_CONFIG_GET(node_id, _custom, _read_reg, _write_reg, _ocr, _cdr,             \
 				  _min_bitrate)                                                    \
 	{                                                                                          \
-		.common = CAN_DT_DRIVER_CONFIG_GET(node_id, _min_bitrate, 1000000),                \
+		.common = CAN_PRIV_DT_DRIVER_CONFIG_GET(node_id, _min_bitrate, 1000000),           \
 		.read_reg = _read_reg,                                                             \
 		.write_reg = _write_reg,                                                           \
 		.ocr = _ocr,                                                                       \
@@ -162,7 +162,7 @@ struct can_sja1000_rx_filter {
  * @brief SJA1000 driver internal data structure.
  */
 struct can_sja1000_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	ATOMIC_DEFINE(rx_allocs, CONFIG_CAN_MAX_FILTER);
 	struct can_sja1000_rx_filter filters[CONFIG_CAN_MAX_FILTER];
 	struct k_mutex mod_lock;

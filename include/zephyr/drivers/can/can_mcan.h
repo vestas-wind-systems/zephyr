@@ -1061,7 +1061,7 @@ struct can_mcan_ext_filter {
  * @brief Bosch M_CAN driver internal data structure.
  */
 struct can_mcan_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	struct k_mutex lock;
 	struct k_sem tx_sem;
 	struct k_mutex tx_mtx;
@@ -1231,7 +1231,7 @@ struct can_mcan_callbacks {
  * @brief Bosch M_CAN driver internal configuration structure.
  */
 struct can_mcan_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	const struct can_mcan_ops *ops;
 	const struct can_mcan_callbacks *callbacks;
 	uint16_t mram_elements[CAN_MCAN_MRAM_CFG_NUM_CELLS];
@@ -1291,7 +1291,7 @@ struct can_mcan_config {
 #ifdef CONFIG_CAN_FD_MODE
 #define CAN_MCAN_DT_CONFIG_GET(node_id, _custom, _ops, _cbs)                                       \
 	{                                                                                          \
-		.common = CAN_DT_DRIVER_CONFIG_GET(node_id, 0, 8000000),                           \
+		.common = CAN_PRIV_DT_DRIVER_CONFIG_GET(node_id, 0, 8000000),                      \
 		.ops = _ops,                                                                       \
 		.callbacks = _cbs,                                                                 \
 		.mram_elements = CAN_MCAN_DT_MRAM_ELEMENTS_GET(node_id),                           \
@@ -1302,7 +1302,7 @@ struct can_mcan_config {
 #else /* CONFIG_CAN_FD_MODE */
 #define CAN_MCAN_DT_CONFIG_GET(node_id, _custom, _ops, _cbs)                                       \
 	{                                                                                          \
-		.common = CAN_DT_DRIVER_CONFIG_GET(node_id, 0, 1000000),                           \
+		.common = CAN_PRIV_DT_DRIVER_CONFIG_GET(node_id, 0, 1000000),                      \
 		.ops = _ops,                                                                       \
 		.callbacks = _cbs,                                                                 \
 		.mram_elements = CAN_MCAN_DT_MRAM_ELEMENTS_GET(node_id),                           \

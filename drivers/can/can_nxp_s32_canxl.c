@@ -70,7 +70,7 @@
 LOG_MODULE_REGISTER(nxp_s32_canxl, CONFIG_CAN_LOG_LEVEL);
 
 struct can_nxp_s32_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 	CANXL_SIC_Type *base_sic;
 #ifdef CONFIG_CAN_NXP_S32_RX_FIFO
 	CANXL_RXFIFO_Type * base_rx_fifo;
@@ -101,7 +101,7 @@ struct can_nxp_s32_rx_callback {
 };
 
 struct can_nxp_s32_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 	Canexcel_Ip_StateType *can_state;
 
 	ATOMIC_DEFINE(rx_allocs, CONFIG_CAN_NXP_S32_MAX_RX);
@@ -736,7 +736,7 @@ static int can_nxp_s32_set_timing_data(const struct device *dev,
 	CanXL_SetFDBaudRate(config->base_sic, &can_fd_time_segment);
 
 	Canexcel_Ip_SetTDCOffsetFD(config->instance, true, false,
-				CAN_CALC_TDCO((timing_data), 0U, CAN_NXP_S32_TDCO_MAX));
+				CAN_PRIV_CALC_TDCO((timing_data), 0U, CAN_NXP_S32_TDCO_MAX));
 
 	return 0;
 }
@@ -1025,7 +1025,7 @@ static int can_nxp_s32_init(const struct device *dev)
 
 #ifdef CAN_NXP_S32_FD_MODE
 	Canexcel_Ip_SetTDCOffsetFD(config->instance, true, false,
-				CAN_CALC_TDCO((&data->timing_data), 0U, CAN_NXP_S32_TDCO_MAX));
+				CAN_PRIV_CALC_TDCO((&data->timing_data), 0U, CAN_NXP_S32_TDCO_MAX));
 #endif
 
 	/* Configure time stamp */
@@ -1240,7 +1240,7 @@ static DEVICE_API(can, can_nxp_s32_driver_api) = {
 	{										\
 		return can_nxp_s32_init(dev);						\
 	}										\
-	CAN_DEVICE_DT_INST_DEFINE(n,							\
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(n,							\
 				  can_nxp_s32_##n##_init,				\
 				  NULL,							\
 				  &can_nxp_s32_data_##n,				\

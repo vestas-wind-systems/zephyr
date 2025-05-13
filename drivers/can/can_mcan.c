@@ -247,7 +247,7 @@ int can_mcan_set_timing_data(const struct device *dev, const struct can_timing *
 		dbtp |= CAN_MCAN_DBTP_TDC;
 
 		/* Set TDC offset for correct location of the Secondary Sample Point (SSP) */
-		tdco = CAN_CALC_TDCO(timing_data, 0U, tdco_max);
+		tdco = CAN_PRIV_CALC_TDCO(timing_data, 0U, tdco_max);
 		LOG_DBG("TDC enabled, using TDCO %u", tdco);
 
 		err = can_mcan_write_reg(dev, CAN_MCAN_TDCR, FIELD_PREP(CAN_MCAN_TDCR_TDCO, tdco));

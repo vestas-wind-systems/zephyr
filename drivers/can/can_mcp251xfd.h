@@ -480,7 +480,7 @@ struct mcp251xfd_fifo {
 };
 
 struct mcp251xfd_data {
-	struct can_driver_data common;
+	struct can_priv_driver_data common;
 
 	/* Interrupt Data */
 	struct gpio_callback int_gpio_cb;
@@ -514,7 +514,7 @@ struct mcp251xfd_data {
 };
 
 struct mcp251xfd_config {
-	const struct can_driver_config common;
+	const struct can_priv_driver_config common;
 
 	/* spi configuration */
 	struct spi_dt_spec bus;

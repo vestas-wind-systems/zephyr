@@ -467,7 +467,7 @@ static int mcp251xfd_set_timing_data(const struct device *dev, const struct can_
 	*reg = sys_cpu_to_le32(tmp);
 
 	/* actual TDCO minimum is -64 but driver implementation only sets >= 0 values */
-	dev_data->tdco = CAN_CALC_TDCO(timing, 0U, MCP251XFD_REG_TDC_TDCO_MAX);
+	dev_data->tdco = CAN_PRIV_CALC_TDCO(timing, 0U, MCP251XFD_REG_TDC_TDCO_MAX);
 
 	ret = mcp251xfd_write(dev, MCP251XFD_REG_DBTCFG, MCP251XFD_REG_SIZE);
 	if (ret < 0) {
@@ -1775,7 +1775,7 @@ static DEVICE_API(can, mcp251xfd_api_funcs) = {
 		MCP251XFD_SET_CLOCK(inst)                                                          \
 	};                                                                                         \
                                                                                                    \
-	CAN_DEVICE_DT_INST_DEFINE(inst, mcp251xfd_init, NULL, &mcp251xfd_data_##inst,             \
+	CAN_PRIV_DEVICE_DT_INST_DEFINE(inst, mcp251xfd_init, NULL, &mcp251xfd_data_##inst,         \
 				  &mcp251xfd_config_##inst, POST_KERNEL, CONFIG_CAN_INIT_PRIORITY, \
 				  &mcp251xfd_api_funcs);
 
