@@ -214,6 +214,28 @@ static void rx_ext_mask_callback_2(const struct device *dev, struct can_frame *f
 }
 
 /**
+ * @brief CAN ID receive callback.
+ *
+ * See @a can_rx_callback_t() for argument description.
+ */
+static void rx_can_id_callback(const struct device *dev, struct can_frame *frame,
+			       void *user_data)
+{
+	uint32_t can_id = POINTER_TO_UINT(user_data);
+	const struct can_frame expected = {
+		.flags   = 0U,
+		.id      = can_id,
+		.dlc     = 8U,
+		.data    = { 0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U }
+	};
+
+	assert_frame_equal(&expected, frame, CAN_STD_ID_MASK);
+	zassert_equal(dev, can_dev, "CAN device does not match");
+
+	k_sem_give(&rx_callback_sem);
+}
+
+/**
  * @brief Send a CAN test frame with asserts.
  *
  * This function will block until the frame is transmitted or a test timeout
@@ -773,6 +795,38 @@ ZTEST_USER(can_classic, test_max_std_filters)
 ZTEST_USER(can_classic, test_max_ext_filters)
 {
 	add_remove_max_filters(true);
+}
+
+/**
+ * @brief Test all standard (11-bit) CAN RX filters.
+ */
+ZTEST_USER(can_classic, test_all_std_filters)
+{
+	struct can_filter filter = {
+		.flags = 0,
+		.id = 0,
+		.mask = CAN_STD_ID_MASK,
+	};
+	struct can_frame frame = {
+		.flags   = 0,
+		.id      = 0,
+		.dlc     = 8,
+		.data    = { 0, 1, 2, 3, 4, 5, 6, 7 }
+	};
+	int filter_id;
+	int max;
+
+	max = can_get_max_filters(can_dev, false);
+
+	/* TODO: limit max to CAN_STD_ID_MASK and print warning */
+
+	for (int i = 0; i < max; i++) {
+		filter.id = i;
+		/* TODO: check and store filter_id */
+		(void)add_rx_filter(can_dev, &filter, rx_can_id_callback);
+	}
+
+
 }
 
 /**
