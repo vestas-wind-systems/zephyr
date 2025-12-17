@@ -214,6 +214,28 @@ static void rx_ext_mask_callback_2(const struct device *dev, struct can_frame *f
 }
 
 /**
+ * @brief CAN frame check receive callback.
+ *
+ * See @a can_rx_callback_t() for argument description.
+ */
+static void rx_can_id_check_callback(const struct device *dev, struct can_frame *frame,
+				     void *user_data)
+{
+	uint32_t can_id = POINTER_TO_UINT(user_data);
+	const struct can_frame expected = {
+		.flags   = 0U,
+		.id      = can_id,
+		.dlc     = 8U,
+		.data    = { 0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U }
+	};
+
+	assert_frame_equal(&expected, frame, CAN_EXT_ID_MASK);
+	zassert_equal(dev, can_dev, "CAN device does not match");
+
+	k_sem_give(&rx_callback_sem);
+}
+
+/**
  * @brief Send a CAN test frame with asserts.
  *
  * This function will block until the frame is transmitted or a test timeout
@@ -773,6 +795,61 @@ ZTEST_USER(can_classic, test_max_std_filters)
 ZTEST_USER(can_classic, test_max_ext_filters)
 {
 	add_remove_max_filters(true);
+}
+
+/**
+ * @brief Test all standard (11-bit) CAN RX filters.
+ */
+ZTEST(can_classic, test_all_std_filters)
+{
+	/* TODO: generalize this and verify also extended filters + CAN FD */
+	struct can_filter filter = {
+		.flags = 0,
+		.id = 0,
+		.mask = CAN_STD_ID_MASK,
+	};
+	struct can_frame frame = {
+		.flags   = 0,
+		.id      = 0,
+		.dlc     = 8,
+		.data    = { 0, 1, 2, 3, 4, 5, 6, 7 }
+	};
+	int max;
+	int err;
+
+	max = can_get_max_filters(can_dev, false);
+	if (max <= 0) {
+		ztest_test_skip();
+	}
+
+	if (max > CAN_STD_ID_MASK) {
+		TC_PRINT("only testing the first %d filters out of %d", CAN_STD_ID_MASK, max);
+		max = CAN_STD_ID_MASK;
+	}
+
+	int filter_id[max];
+
+	for (int i = 0; i < max; i++) {
+		filter.id = i;
+		filter_id[i] = can_add_rx_filter(can_dev, rx_can_id_check_callback,
+						 UINT_TO_POINTER(i), &filter);
+		zassert_not_equal(filter_id[i], -ENOSPC, "no filters available");
+		zassert_true(filter_id[i] >= 0, "negative filter number");
+	}
+
+	k_sem_reset(&rx_callback_sem);
+
+	for (int i = 0; i < max; i++) {
+		frame.id = i;
+		send_test_frame(can_dev, &frame);
+
+		err = k_sem_take(&rx_callback_sem, TEST_RECEIVE_TIMEOUT);
+		zassert_equal(err, 0, "receive timeout");
+	}
+
+	for (int i = 0; i < max; i++) {
+		can_remove_rx_filter(can_dev, filter_id[i]);
+	}
 }
 
 /**
