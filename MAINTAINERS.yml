@@ -3295,6 +3295,7 @@ Kernel:
     - cfriedt
     - npitre
     - TaiJuWu
+    - Mattemagikern
   files:
     - doc/kernel/
     - include/zephyr/kernel*.h
