@@ -1916,7 +1916,6 @@ Documentation Infrastructure:
   status: maintained
   maintainers:
     - rriveramcrus
-  collaborators:
     - Liam-Ogletree
   files:
     - drivers/haptics/
