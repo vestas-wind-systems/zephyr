@@ -1050,6 +1050,7 @@ Continuous Integration:
     - nashif
   collaborators:
     - fabiobaltieri
+    - henrikbrixandersen
     - kartben
   files:
     - .github/
