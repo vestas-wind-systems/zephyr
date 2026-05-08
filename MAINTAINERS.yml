@@ -2443,6 +2443,8 @@ Documentation Infrastructure:
   status: maintained
   maintainers:
     - danieldegrasse
+  collaborators:
+    - lucien-nxp
   files:
     - drivers/sdhc/
     - tests/drivers/sdhc/
