@@ -933,26 +933,8 @@ enum can_mcan_psr_lec {
  * See Bosch M_CAN Users Manual section 2.4.2 for details.
  */
 struct can_mcan_rx_fifo_hdr {
-	union {
-		struct {
-			uint32_t ext_id: 29;
-			uint32_t rtr: 1;
-			uint32_t xtd: 1;
-			uint32_t esi: 1;
-		};
-		struct {
-			uint32_t pad1: 18;
-			uint32_t std_id: 11;
-			uint32_t pad2: 3;
-		};
-	};
-	uint32_t rxts: 16;
-	uint32_t dlc: 4;
-	uint32_t brs: 1;
-	uint32_t fdf: 1;
-	uint32_t res: 2;
-	uint32_t fidx: 7;
-	uint32_t anmf: 1;
+	uint32_t id;
+	uint32_t dlc;
 } __packed __aligned(4);
 
 /**
@@ -979,26 +961,8 @@ struct can_mcan_rx_fifo {
  * See Bosch M_CAN Users Manual section 2.4.3 for details.
  */
 struct can_mcan_tx_buffer_hdr {
-	union {
-		struct {
-			uint32_t ext_id: 29;
-			uint32_t rtr: 1;
-			uint32_t xtd: 1;
-			uint32_t esi: 1;
-		};
-		struct {
-			uint32_t pad1: 18;
-			uint32_t std_id: 11;
-			uint32_t pad2: 3;
-		};
-	};
-	uint16_t res1;
-	uint8_t dlc: 4;
-	uint8_t brs: 1;
-	uint8_t fdf: 1;
-	uint8_t tsce: 1;
-	uint8_t efc: 1;
-	uint8_t mm;
+	uint32_t id;
+	uint32_t dlc;
 } __packed __aligned(4);
 
 /**
@@ -1025,25 +989,8 @@ struct can_mcan_tx_buffer {
  * See Bosch M_CAN Users Manual section 2.4.4 for details.
  */
 struct can_mcan_tx_event_fifo {
-	union {
-		struct {
-			uint32_t ext_id: 29;
-			uint32_t rtr: 1;
-			uint32_t xtd: 1;
-			uint32_t esi: 1;
-		};
-		struct {
-			uint32_t pad1: 18;
-			uint32_t std_id: 11;
-			uint32_t pad2: 3;
-		};
-	};
-	uint16_t txts;
-	uint8_t dlc: 4;
-	uint8_t brs: 1;
-	uint8_t fdf: 1;
-	uint8_t et: 2;
-	uint8_t mm;
+	uint32_t id;
+	uint32_t dlc;
 } __packed __aligned(4);
 
 /* Bosch M_CAN Standard/Extended Filter Element Configuration (SFEC/EFEC) */
